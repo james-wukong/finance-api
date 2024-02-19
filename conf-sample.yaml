@@ -1,0 +1,16 @@
+mariadb:
+  host: localhost
+  port: 3306
+  user: root
+  pwd: root
+
+mongodb:
+  host: cluster1.xxxxx.mongodb.net
+  user: root
+  pwd: root
+  token: xxxxxxxxxx
+
+api:
+  finnhub:
+    api_endpoint: https://finnhub.io/api/v1/
+    token: xxxxxxxxxxxxxxx
