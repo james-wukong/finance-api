@@ -1,4 +1,5 @@
 class ApiException(Exception):
+
     def __init__(self, *args):
         if len(args) > 1:
             self.message = args[0]
@@ -11,7 +12,8 @@ class ApiException(Exception):
 
     def __str__(self):
         if self.message and self.function_name:
-            return 'ApiException.{0}, {1}'.format(self.function_name, self.message)
+            return 'ApiException.{0}, {1}'.format(self.function_name,
+                                                  self.message)
         elif self.message:
             return 'ApiException: {0}'.format(self.message)
         else:

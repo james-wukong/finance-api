@@ -8,6 +8,7 @@ class MongoConn:
     """
     Initialize the mongodb connection
     """
+
     @classmethod
     def initialize_mongodb_client(cls, uri: str) -> MongoClient | None:
         try:

@@ -1,16 +1,20 @@
 mariadb:
   host: localhost
   port: 3306
-  user: root
-  pwd: root
+  user: xxxxx
+  password: xxxxx
+  database: finance_api
 
 mongodb:
-  host: cluster1.xxxxx.mongodb.net
-  user: root
-  pwd: root
-  token: xxxxxxxxxx
+  host: clusterxxxx.xxxxxxxx.mongodb.net
+  user: xxxxx
+  password: xxxxxx
+  token: xxxxxxxx
 
 api:
   finnhub:
     api_endpoint: https://finnhub.io/api/v1/
-    token: xxxxxxxxxxxxxxx
+    token: xxxxxxxxx
+  fmp:
+    api_endpoint: https://financialmodelingprep.com/api/
+    token: xxxxxxxxxxx

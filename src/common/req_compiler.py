@@ -1,9 +1,10 @@
+from abc import ABC, abstractmethod
 from collections import defaultdict
 from src.common.decorator import ApiDecorator
 from src.common.api_exception import ApiException
 
 
-class FinnhubRequestBuilder:
+class RequestBuilder(ABC):
 
     def __init__(self, base_url, api_key):
         self.api_key = api_key
@@ -33,7 +34,7 @@ class FinnhubRequestBuilder:
 
         return query_string
 
-    @ApiDecorator.inject_api_key(param_api='token')
+    @abstractmethod
     def compile_request(self, category: str = None, params: dict = defaultdict):
         self.__category = category
         self.__query_params = params
@@ -41,3 +42,17 @@ class FinnhubRequestBuilder:
         query_params = self.__build_query_params()
 
         return ''.join([self.__base_url, category, query_params])
+
+
+class FinnhubRequest(RequestBuilder):
+
+    @ApiDecorator.inject_api_key(param_api='token')
+    def compile_request(self, category: str = None, params: dict = defaultdict):
+        return super(FinnhubRequest, self).compile_request(category, params)
+
+
+class FmpRequest(RequestBuilder):
+
+    @ApiDecorator.inject_api_key(param_api='apikey')
+    def compile_request(self, category: str = None, params: dict = defaultdict):
+        return super(FmpRequest, self).compile_request(category, params)
