@@ -7,6 +7,7 @@ if __name__ == '__main__':
     with open('conf.yaml', 'r') as file:
         config = yaml.safe_load(file)
 
+    # initialize FinnhubApi
     fin_api = FinnhubApi(base_url=config['api']['finnhub']['api_endpoint'],
                          api_key=config['api']['finnhub']['token'],
                          write_to='mongo',
@@ -24,6 +25,7 @@ if __name__ == '__main__':
     # get insider transactions and save in mongodb
     insider = fin_api.get_insider_transactions(params=insider_params)
 
+    # initialize FmpApi
     fmp_api = FmpApi(base_url=config['api']['fmp']['api_endpoint'],
                      api_key=config['api']['fmp']['token'],
                      write_to='mariadb',

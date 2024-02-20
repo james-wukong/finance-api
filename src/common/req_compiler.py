@@ -13,11 +13,19 @@ class RequestBuilder(ABC):
         self.__query_params = None
 
     def __build_category(self):
+        """
+        join category part into api uri
+        :return:
+        """
         if self.__category is None:
             raise ApiException("Category should not be empty !")
         return ''.join(['/', self.__category])
 
     def __build_query_params(self):
+        """
+        join query part into api uri
+        :return:
+        """
         if not self.__query_params or len(self.__query_params) == 0:
             return ''
 
@@ -36,6 +44,12 @@ class RequestBuilder(ABC):
 
     @abstractmethod
     def compile_request(self, category: str = None, params: dict = None):
+        """
+        create the final api uri
+        :param category: str
+        :param params: dict
+        :return:
+        """
         self.__category = category
         self.__query_params = params
         category = self.__build_category()

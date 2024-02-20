@@ -17,19 +17,24 @@ class FinnhubApi:
                  base_url=None,
                  api_key=None,
                  output_format='json',
-                 write_to='mongo',
+                 write_to_mysql=False,
+                 write_to_mongo=False,
                  mongo_conf=None):
         self.base_url = base_url
         self.api_key = api_key
         self.output_format = output_format
-        self.write_to = write_to
+        self.write_to_mysql = write_to_mysql
+        self.write_to_mongo = write_to_mongo
         self.mongo_conf = mongo_conf
         self.mongo_uri = self.generate_mongo_uri()
-        self.current_day = datetime.today().strftime('%Y-%m-%d')
         self.fin_api_req = FinnhubRequest(base_url=self.base_url,
                                           api_key=self.api_key)
 
     def generate_mongo_uri(self) -> str | None:
+        """
+        generate mongo connection uri based on input
+        :return:
+        """
         if not self.mongo_conf:
             return None
         return (f"mongodb+srv://{self.mongo_conf['user']}:"
