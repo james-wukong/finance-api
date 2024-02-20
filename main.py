@@ -31,3 +31,5 @@ if __name__ == '__main__':
     fmp_params = {'query': 'AA', 'limit': 10, 'exchange': 'NASDAQ'}
     # get company ticker and save in mariadb
     companies = fmp_api.get_company_ticker(params=fmp_params)
+    category = 'v3/profile/TSLA'
+    company = fmp_api.get_company_profile(category=category)

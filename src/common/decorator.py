@@ -93,7 +93,7 @@ class ApiDecorator:
                     cursor.executemany(stmt, response)
                     cnx.commit()
                 except mysql.connector.Error as err:
-                    print(err)
+                    print("Error Happened Here?", err)
                     cnx.rollback()
                 finally:
                     if cnx.is_connected():

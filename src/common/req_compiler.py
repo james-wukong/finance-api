@@ -18,7 +18,7 @@ class RequestBuilder(ABC):
         return ''.join(['/', self.__category])
 
     def __build_query_params(self):
-        if len(self.__query_params) == 0:
+        if not self.__query_params or len(self.__query_params) == 0:
             return ''
 
         query_params_dict = self.__query_params.copy()
@@ -35,7 +35,7 @@ class RequestBuilder(ABC):
         return query_string
 
     @abstractmethod
-    def compile_request(self, category: str = None, params: dict = defaultdict):
+    def compile_request(self, category: str = None, params: dict = None):
         self.__category = category
         self.__query_params = params
         category = self.__build_category()
@@ -47,12 +47,12 @@ class RequestBuilder(ABC):
 class FinnhubRequest(RequestBuilder):
 
     @ApiDecorator.inject_api_key(param_api='token')
-    def compile_request(self, category: str = None, params: dict = defaultdict):
+    def compile_request(self, category: str = None, params: dict = None):
         return super(FinnhubRequest, self).compile_request(category, params)
 
 
 class FmpRequest(RequestBuilder):
 
     @ApiDecorator.inject_api_key(param_api='apikey')
-    def compile_request(self, category: str = None, params: dict = defaultdict):
+    def compile_request(self, category: str = None, params: dict = None):
         return super(FmpRequest, self).compile_request(category, params)
