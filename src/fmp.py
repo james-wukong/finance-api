@@ -1,13 +1,13 @@
-from datetime import datetime
-
 import requests
+from requests import Response
 
 from src.common.api_exception import ApiException
 from src.common.decorator import ApiDecorator
 from src.common.req_compiler import FmpRequest
+from src.common.interface import ApiInterface
 
 
-class FmpApi:
+class FmpApi(ApiInterface):
     """
     Base class that implements api calls
     """
@@ -17,15 +17,24 @@ class FmpApi:
                  api_key=None,
                  output_format='json',
                  write_to_mysql=False,
+                 write_to_postgres=False,
+                 write_to_azure=False,
                  write_to_mongo=False,
-                 mariadb_conf=None):
-        self.base_url = base_url
-        self.api_key = api_key
-        self.output_format = output_format
-        self.write_to_mysql = write_to_mysql
-        self.write_to_mongo = write_to_mongo
-        self.mariadb_conf = mariadb_conf
-        self.current_day = datetime.today().strftime('%Y-%m-%d')
+                 mongo_conf: dict = None,
+                 maria_conf: dict = None,
+                 azure_conf: dict = None,
+                 postgres_conf: dict = None):
+        super(FmpApi, self).__init__(base_url=base_url,
+                                     api_key=api_key,
+                                     output_format=output_format,
+                                     write_to_mysql=write_to_mysql,
+                                     write_to_postgres=write_to_postgres,
+                                     write_to_azure=write_to_azure,
+                                     write_to_mongo=write_to_mongo,
+                                     mongo_conf=mongo_conf,
+                                     maria_conf=maria_conf,
+                                     azure_conf=azure_conf,
+                                     postgres_conf=postgres_conf)
         self.fmp_api_req = FmpRequest(base_url=self.base_url,
                                       api_key=self.api_key)
 
@@ -97,3 +106,53 @@ class FmpApi:
                  item['image'], item['ipoDate'], item['defaultImage'], item['isEtf'],
                  item['isActivelyTrading'], item['isAdr'], item['isFund'])
                 for item in company.json()], stmt
+
+    @ApiDecorator.write_to_maria_sp(write_table='company_ticker')
+    @ApiDecorator.write_to_postgres_sp(write_table='company_ticker')
+    @ApiDecorator.write_to_mongodb_sp(collection='company_ticker')
+    def fetch_company_ticker(self, params=None) -> Response:
+        """
+        get company ticker info from FMP api: search-ticker
+        :param params: dict, such as, {'symbol': 'TSLA', 'from':'2000-01-01'}
+        :return:
+        """
+        api_uri = self.fmp_api_req.compile_request(category='v3/search-ticker',
+                                                   params=params)
+        ticker = requests.get(api_uri)
+        if not ticker.ok:
+            raise ApiException("response from finnhub api is not OK",
+                               FmpApi.get_company_ticker.__name__)
+
+        return ticker
+
+    @ApiDecorator.write_to_maria_sp(write_table='company_profile')
+    @ApiDecorator.write_to_postgres_sp(write_table='company_profile')
+    @ApiDecorator.write_to_mongodb_sp(collection='company_profile')
+    def fetch_company_profile(self, category: str = None) -> Response:
+        """
+        get company infomation from FMP api: company profile
+        :param category: str,
+        :return:
+        """
+        api_uri = self.fmp_api_req.compile_request(category=category)
+        company = requests.get(api_uri)
+        if not company.ok:
+            raise ApiException("response from finnhub api is not OK",
+                               FmpApi.get_company_profile.__name__)
+
+        return company
+
+    @ApiDecorator.write_to_mongodb_sp(collection='company_daily_chart')
+    def fetch_daily_chart(self, category: str = None) -> Response:
+        """
+                get company infomation from FMP api: company profile
+                :param category: str,
+                :return:
+                """
+        api_uri = self.fmp_api_req.compile_request(category=category)
+        chart = requests.get(api_uri)
+        if not chart.ok:
+            raise ApiException("response from finnhub api is not OK",
+                               FmpApi.get_company_profile.__name__)
+
+        return chart

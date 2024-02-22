@@ -1,5 +1,5 @@
 # ignore files or dirs in this project
-.idea
+.idea/
 .DS_Store
 conf.yaml
 data

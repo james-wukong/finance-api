@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from collections import defaultdict
 from src.common.decorator import ApiDecorator
 from src.common.api_exception import ApiException
 

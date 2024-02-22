@@ -1,11 +1,12 @@
 import functools
+import json
 
 import mysql.connector
 import pandas as pd
 
 from src.common.api_exception import ApiException
-from src.common.mongodb import MongoConn
-from src.common.mariadb import MariadbConn
+from src.common.database import MariadbConn, MongoConn
+from src.common.pyspark import MySpark
 
 
 class ApiDecorator:
@@ -17,6 +18,7 @@ class ApiDecorator:
         :param param_api: str, different api might implement different name in their uri, such as, 'token', 'apikey'
         :return:
         """
+
         def wrapper(func):
 
             @functools.wraps(func)
@@ -39,6 +41,7 @@ class ApiDecorator:
         :param func:
         :return:
         """
+
         @functools.wraps(func)
         def _call_wrapper(self, *args, **kwargs):
             response = func(self, *args, **kwargs)
@@ -60,8 +63,8 @@ class ApiDecorator:
         :param col: str, collection name
         :return:
         """
-        def wrapper(func):
 
+        def wrapper(func):
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
                 response = func(self, *args, **kwargs)
@@ -77,12 +80,50 @@ class ApiDecorator:
         return wrapper
 
     @classmethod
+    def write_to_mongodb_sp(cls, collection, database='finance_api'):
+        """
+        decorator that writes result data into mongodb
+        :param database: str, database name
+        :param collection: str, collection name
+        :return:
+        """
+
+        def wrapper(func):
+            @functools.wraps(func)
+            def _call_wrapper(self, *args, **kwargs):
+                response = func(self, *args, **kwargs)
+                if self.write_to_mongo and response:
+                    spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
+                    sc = spark.sparkContext
+                    if isinstance(response.json(), list):
+                        data = response.json()
+                    else:
+                        data = [response.json()]
+                    df = spark.read.json(sc.parallelize([json.dumps(record) for record in data]))
+                    config = {
+                        'uri': self.mongo_uri,
+                        'database': database,
+                        'collection': collection
+                    }
+                    df.write.format("mongo") \
+                        .options(**config) \
+                        .mode("append") \
+                        .save()
+                    spark.stop()
+                return response
+
+            return _call_wrapper
+
+        return wrapper
+
+    @classmethod
     def write_to_mariadb(cls, func):
         """
         decorator that write the result data into mariadb
         :param func:
         :return:
         """
+
         @functools.wraps(func)
         def _call_wrapper(self, *args, **kwargs):
             response, stmt = func(self, *args, **kwargs)
@@ -102,3 +143,133 @@ class ApiDecorator:
                         cnx.close()
 
         return _call_wrapper
+
+    @classmethod
+    def write_to_maria_sp(cls, write_table: str = ''):
+        """
+        decorator that write the result data into mariadb
+        :param write_table: str, table name to write data
+        :return:
+        """
+
+        def wrapper(func):
+            @functools.wraps(func)
+            def _call_wrapper(self, *args, **kwargs):
+                response = func(self, *args, **kwargs)
+                if self.write_to_mysql and response:
+                    spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
+                    sc = spark.sparkContext
+                    if isinstance(response.json(), list):
+                        data = response.json()
+                    else:
+                        data = [response.json()]
+                    df = spark.read.json(sc.parallelize([json.dumps(record) for record in data]))
+                    properties = {key: self.maria_conf[key] for key in self.maria_conf.keys()
+                                  & {'user', 'password', 'driver'}}
+                    df.write.jdbc(
+                        url=self.maria_jdbc,
+                        table=write_table,
+                        mode="append",
+                        properties=properties
+                    )
+                    spark.stop()
+                return response
+
+            return _call_wrapper
+
+        return wrapper
+
+    @classmethod
+    def write_to_postgres_sp(cls, write_table: str = ''):
+        """
+        decorator that write the result data into mariadb
+        :param write_table: str, table name to write data
+        :return:
+        """
+
+        def wrapper(func):
+            @functools.wraps(func)
+            def _call_wrapper(self, *args, **kwargs):
+                response = func(self, *args, **kwargs)
+                if self.write_to_postgres and response:
+                    spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
+                    sc = spark.sparkContext
+                    if isinstance(response.json(), list):
+                        data = response.json()
+                    else:
+                        data = [response.json()]
+                    df = spark.read.json(sc.parallelize([json.dumps(record) for record in data]))
+                    properties = {key: self.postgres_conf[key] for key in self.postgres_conf.keys()
+                                  & {'user', 'password', 'driver'}}
+                    df.write.jdbc(
+                        url=self.postgres_jdbc,
+                        table=write_table,
+                        mode="append",
+                        properties=properties
+                    )
+                    spark.stop()
+                return response
+
+            return _call_wrapper
+
+        return wrapper
+
+    @classmethod
+    def write_to_azure_sp(cls, write_table: str = ''):
+        """
+        decorator that write the result data into mariadb
+        :param write_table: str, table name to write data
+        :return:
+        """
+
+        def wrapper(func):
+            @functools.wraps(func)
+            def _call_wrapper(self, *args, **kwargs):
+                response = func(self, *args, **kwargs)
+                if self.write_to_mysql and response:
+                    spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
+                    sc = spark.sparkContext
+                    if isinstance(response.json(), list):
+                        data = response.json()
+                    else:
+                        data = [response.json()]
+                    df = spark.read.json(sc.parallelize([json.dumps(record) for record in data]))
+                    properties = {key: self.azure_conf[key] for key in self.azure_conf.keys()
+                                  & {'user', 'password', 'driver'}}
+                    df.write.jdbc(
+                        url=self.azure_jdbc,
+                        table=write_table,
+                        mode="append",
+                        properties=properties
+                    )
+                    spark.stop()
+                return response
+            return _call_wrapper
+        return wrapper
+
+    @classmethod
+    def write_to_hadoop_csv(cls, file_name: str = ''):
+        """
+        save data in hadoop /user/input/project directory
+        :param file_name: str, file name
+        :return:
+        """
+        def wrapper(func):
+            @functools.wraps(func)
+            def _call_wrapper(self, *args, **kwargs):
+                response = func(self, *args, **kwargs)
+                if self.write_to_mysql and response:
+                    spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
+                    sc = spark.sparkContext
+                    if isinstance(response.json(), list):
+                        data = response.json()
+                    else:
+                        data = [response.json()]
+                    df = spark.read.json(sc.parallelize([json.dumps(record) for record in data]))
+                    df.coalesce(1).write.mode('overwrite') \
+                        .option('header', 'true') \
+                        .csv(f'hdfs://localhost:9000/user/input/project/{file_name}.csv')
+                    spark.stop()
+                return response
+            return _call_wrapper
+        return wrapper

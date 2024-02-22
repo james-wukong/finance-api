@@ -1,5 +1,4 @@
 class ApiException(Exception):
-
     def __init__(self, *args):
         if len(args) > 1:
             self.message = args[0]

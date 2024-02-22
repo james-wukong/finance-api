@@ -1,0 +1,7 @@
+pyyaml
+requests
+pandas
+yfinance
+mysql-connector-python
+pymongo
+pyspark
