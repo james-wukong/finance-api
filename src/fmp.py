@@ -107,9 +107,9 @@ class FmpApi(ApiInterface):
                  item['isActivelyTrading'], item['isAdr'], item['isFund'])
                 for item in company.json()], stmt
 
-    @ApiDecorator.write_to_maria_sp(write_table='company_ticker')
-    @ApiDecorator.write_to_postgres_sp(write_table='company_ticker')
-    @ApiDecorator.write_to_mongodb_sp(collection='company_ticker')
+    @ApiDecorator.write_to_maria_sp(write_table='fmp_company_ticker')
+    @ApiDecorator.write_to_postgres_sp(write_table='fmp_company_ticker')
+    # @ApiDecorator.write_to_mongodb_sp(collection='fmp_company_ticker')
     def fetch_company_ticker(self, params: dict = None) -> Response:
         """
         get company ticker info from FMP api: search-ticker
@@ -125,16 +125,16 @@ class FmpApi(ApiInterface):
 
         return ticker
 
-    @ApiDecorator.write_to_maria_sp(write_table='company_profile')
-    @ApiDecorator.write_to_postgres_sp(write_table='company_profile')
-    @ApiDecorator.write_to_mongodb_sp(collection='company_profile')
-    def fetch_company_profile(self, category: str = None) -> Response:
+    @ApiDecorator.write_to_maria_sp(write_table='fmp_company_profile')
+    @ApiDecorator.write_to_postgres_sp(write_table='fmp_company_profile')
+    # @ApiDecorator.write_to_mongodb_sp(collection='fmp_company_profile')
+    def fetch_company_profile(self, symbol: str = 'TSLA') -> Response:
         """
         get company information from FMP api: company profile
-        :param category: str, such as symbol 'TSLA'
+        :param symbol: str, such as symbol 'TSLA'
         :return:
         """
-        api_uri = self.fmp_api_req.compile_request(category=f'v3/profile/{category}')
+        api_uri = self.fmp_api_req.compile_request(category=f'v3/profile/{symbol}')
         company = requests.get(api_uri)
         if not company.ok:
             raise ApiException("response from finnhub api is not OK",
@@ -142,14 +142,14 @@ class FmpApi(ApiInterface):
 
         return company
 
-    @ApiDecorator.write_to_mongodb_sp(collection='company_daily_chart')
-    def fetch_daily_chart(self, category: str = None) -> Response:
+    @ApiDecorator.write_to_mongodb_sp(collection='fmp_company_daily_chart')
+    def fetch_daily_chart(self, symbol: str = 'TSLA') -> Response:
         """
         get company information from FMP api: company profile
-        :param category: str, such as symbol 'TSLA'
+        :param symbol: str, such as symbol 'TSLA'
         :return:
         """
-        api_uri = self.fmp_api_req.compile_request(category=f'v3/historical-price-full/{category}')
+        api_uri = self.fmp_api_req.compile_request(category=f'v3/historical-price-full/{symbol}')
         chart = requests.get(api_uri)
         if not chart.ok:
             raise ApiException("response from finnhub api is not OK",
@@ -157,10 +157,10 @@ class FmpApi(ApiInterface):
 
         return chart
 
-    @ApiDecorator.write_to_hadoop_csv(file_name='stock_news')
-    @ApiDecorator.write_to_maria_sp(write_table='stock_news')
-    @ApiDecorator.write_to_postgres_sp(write_table='stock_news')
-    @ApiDecorator.write_to_mongodb_sp(collection='stock_news')
+    # @ApiDecorator.write_to_hadoop_csv(file_name='fmp_stock_news')
+    @ApiDecorator.write_to_maria_sp(write_table='fmp_stock_news')
+    @ApiDecorator.write_to_postgres_sp(write_table='fmp_stock_news')
+    # @ApiDecorator.write_to_mongodb_sp(collection='fmp_stock_news')
     def fetch_stock_news(self, params: dict = None):
         """
         get company information from FMP api: company profile
@@ -176,20 +176,61 @@ class FmpApi(ApiInterface):
 
         return news
 
-    @ApiDecorator.write_to_hadoop_csv(file_name='historical_rating')
-    @ApiDecorator.write_to_maria_sp(write_table='historical_rating')
-    @ApiDecorator.write_to_postgres_sp(write_table='historical_rating')
-    @ApiDecorator.write_to_mongodb_sp(collection='historical_rating')
-    def fetch_historical_rating(self, category: str = None):
+    # @ApiDecorator.write_to_hadoop_csv(file_name='fmp_historical_rating')
+    @ApiDecorator.write_to_maria_sp(write_table='fmp_historical_rating')
+    @ApiDecorator.write_to_postgres_sp(write_table='fmp_historical_rating')
+    # @ApiDecorator.write_to_mongodb_sp(collection='fmp_historical_rating')
+    def fetch_historical_rating(self, symbol: str = 'TSLA'):
         """
         the historical rating of a company
-        :param category: str, such as symbol 'TSLA'
+        :param symbol: str, such as symbol 'TSLA'
         :return:
         """
-        api_uri = self.fmp_api_req.compile_request(category=f'v3/historical-rating/{category}')
+        api_uri = self.fmp_api_req.compile_request(category=f'v3/historical-rating/{symbol}')
         ratings = requests.get(api_uri)
         if not ratings.ok:
             raise ApiException("response from finnhub api is not OK",
                                FmpApi.fetch_historical_rating.__name__)
 
         return ratings
+
+    @ApiDecorator.write_to_maria_sp(write_table='fmp_cash_flow_stmt')
+    @ApiDecorator.write_to_postgres_sp(write_table='fmp_cash_flow_stmt')
+    @ApiDecorator.write_to_mongodb_sp(collection='fmp_cash_flow_stmt')
+    def fetch_cash_flow_stmt(self, symbol: str = '', params: dict = None):
+        """
+        The cash flow statement is a financial statement that highlights how cash moves through the company,
+        including both cash inflows and outflows
+        :param params: {period: (annual | quarter), limit: (int)}
+        :param symbol: str, such as symbol 'TSLA'
+        :return:
+        """
+        api_uri = self.fmp_api_req.compile_request(category=f'v3/cash-flow-statement/{symbol}',
+                                                   params=params)
+        stmt = requests.get(api_uri)
+        if not stmt.ok:
+            raise ApiException("response from finnhub api is not OK",
+                               FmpApi.fetch_cash_flow_stmt.__name__)
+
+        return stmt
+
+    @ApiDecorator.write_to_maria_sp(write_table='fmp_income_stmt')
+    @ApiDecorator.write_to_postgres_sp(write_table='fmp_income_stmt')
+    @ApiDecorator.write_to_mongodb_sp(collection='fmp_income_stmt')
+    def fetch_income_stmt(self, symbol: str = '', params: dict = None):
+        """
+         real-time income statement data for a wide range of companies,
+         including public companies, private companies, and ETFs.
+        :param params: {period: (annual | quarter), limit: (int)}
+        :param symbol: str, such as symbol 'TSLA'
+        :return:
+        """
+        api_uri = self.fmp_api_req.compile_request(category=f'v3/cash-flow-statement/{symbol}',
+                                                   params=params)
+        stmt = requests.get(api_uri)
+        if not stmt.ok:
+            raise ApiException("response from finnhub api is not OK",
+                               FmpApi.fetch_income_stmt.__name__)
+
+        return stmt
+

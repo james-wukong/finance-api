@@ -4,6 +4,8 @@ import os
 
 import mysql.connector
 import pandas as pd
+from pyspark.sql import DataFrame
+from pyspark.sql.types import StructType
 
 from src.common.api_exception import ApiException
 from src.common.database import MariadbConn, MongoConn
@@ -11,6 +13,29 @@ from src.common.pyspark import MySpark
 
 
 class ApiDecorator:
+
+    @classmethod
+    def __prepare_dataframe(cls, spark, sc, data) -> DataFrame:
+        """
+        prepare dataframe when the data might be in different data types
+        :param spark: spark session
+        :param sc: spark context
+        :param data: data to be processed
+        :return: spark sql dataframe
+        """
+        if isinstance(data, pd.DataFrame):
+            df = spark.createDataFrame(data)
+        elif isinstance(data, list):
+            df = spark.read.json(sc.parallelize([json.dumps(record) for record in data]))
+        elif isinstance(data, dict):
+            data = [data]
+            df = spark.read.json(sc.parallelize([json.dumps(record) for record in data]))
+        else:
+            # initialize empty dataframe
+            schema = StructType([])
+            df = spark.createDataFrame([], schema)
+
+        return df
 
     @classmethod
     def inject_api_key(cls, param_api: str):
@@ -72,40 +97,6 @@ class ApiDecorator:
         return wrapper
 
     @classmethod
-    def write_to_mongodb_sp(cls, collection, database='finance_api'):
-        """
-        decorator that writes result data into mongodb
-        :param database: str, database name
-        :param collection: str, collection name
-        :return:
-        """
-        def wrapper(func):
-            @functools.wraps(func)
-            def _call_wrapper(self, *args, **kwargs):
-                response = func(self, *args, **kwargs)
-                if self.write_to_mongo and response:
-                    spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
-                    sc = spark.sparkContext
-                    if isinstance(response.json(), list):
-                        data = response.json()
-                    else:
-                        data = [response.json()]
-                    df = spark.read.json(sc.parallelize([json.dumps(record) for record in data]))
-                    config = {
-                        'uri': self.mongo_uri,
-                        'database': database,
-                        'collection': collection
-                    }
-                    df.write.format("mongo") \
-                        .options(**config) \
-                        .mode("append") \
-                        .save()
-                    spark.stop()
-                return response
-            return _call_wrapper
-        return wrapper
-
-    @classmethod
     def write_to_mariadb(cls, func):
         """
         decorator that write the result data into mariadb
@@ -132,6 +123,43 @@ class ApiDecorator:
         return _call_wrapper
 
     @classmethod
+    def write_to_mongodb_sp(cls, collection, database='finance_api'):
+        """
+        decorator that writes result data into mongodb
+        :param database: str, database name
+        :param collection: str, collection name
+        :return:
+        """
+
+        def wrapper(func):
+            @functools.wraps(func)
+            def _call_wrapper(self, *args, **kwargs):
+                response = func(self, *args, **kwargs)
+                if not isinstance(response, pd.DataFrame):
+                    response = response.json()
+                if self.write_to_mongo:
+                    spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
+                    sc = spark.sparkContext
+                    df = ApiDecorator.__prepare_dataframe(spark, sc, response)
+                    config = {
+                        'uri': self.mongo_uri,
+                        'database': database,
+                        'collection': collection
+                    }
+                    if not df.isEmpty():
+                        df.write.format("mongo") \
+                            .options(**config) \
+                            .mode("append") \
+                            .save()
+                        spark.stop()
+                return response
+
+            return _call_wrapper
+
+        return wrapper
+
+
+    @classmethod
     def write_to_maria_sp(cls, write_table: str = ''):
         """
         decorator that write the result data into mariadb
@@ -142,22 +170,22 @@ class ApiDecorator:
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
                 response = func(self, *args, **kwargs)
-                if self.write_to_mysql and response:
+                if not isinstance(response, pd.DataFrame):
+                    response = response.json()
+                if self.write_to_mysql:
                     spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
                     sc = spark.sparkContext
-                    if isinstance(response.json(), list):
-                        data = response.json()
-                    else:
-                        data = [response.json()]
-                    df = spark.read.json(sc.parallelize([json.dumps(record) for record in data]))
+                    df = ApiDecorator.__prepare_dataframe(spark, sc, response)
                     properties = {key: self.maria_conf[key] for key in self.maria_conf.keys()
                                   & {'user', 'password', 'driver'}}
-                    df.write.jdbc(
-                        url=self.maria_jdbc,
-                        table=write_table,
-                        mode="append",
-                        properties=properties
-                    )
+
+                    if not df.isEmpty():
+                        df.write.jdbc(
+                            url=self.maria_jdbc,
+                            table=write_table,
+                            mode="append",
+                            properties=properties
+                        )
                     spark.stop()
                 return response
             return _call_wrapper
@@ -174,22 +202,22 @@ class ApiDecorator:
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
                 response = func(self, *args, **kwargs)
-                if self.write_to_postgres and response:
+                if not isinstance(response, pd.DataFrame):
+                    response = response.json()
+                if self.write_to_postgres:
                     spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
                     sc = spark.sparkContext
-                    if isinstance(response.json(), list):
-                        data = response.json()
-                    else:
-                        data = [response.json()]
-                    df = spark.read.json(sc.parallelize([json.dumps(record) for record in data]))
+                    df = ApiDecorator.__prepare_dataframe(spark, sc, response)
                     properties = {key: self.postgres_conf[key] for key in self.postgres_conf.keys()
                                   & {'user', 'password', 'driver'}}
-                    df.write.jdbc(
-                        url=self.postgres_jdbc,
-                        table=write_table,
-                        mode="append",
-                        properties=properties
-                    )
+
+                    if not df.isEmpty():
+                        df.write.jdbc(
+                            url=self.postgres_jdbc,
+                            table=write_table,
+                            mode="append",
+                            properties=properties
+                        )
                     spark.stop()
                 return response
             return _call_wrapper
@@ -206,22 +234,22 @@ class ApiDecorator:
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
                 response = func(self, *args, **kwargs)
-                if self.write_to_mysql and response:
+                if not isinstance(response, pd.DataFrame):
+                    response = response.json()
+                if self.write_to_mysql:
                     spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
                     sc = spark.sparkContext
-                    if isinstance(response.json(), list):
-                        data = response.json()
-                    else:
-                        data = [response.json()]
-                    df = spark.read.json(sc.parallelize([json.dumps(record) for record in data]))
+                    df = ApiDecorator.__prepare_dataframe(spark, sc, response)
                     properties = {key: self.azure_conf[key] for key in self.azure_conf.keys()
                                   & {'user', 'password', 'driver'}}
-                    df.write.jdbc(
-                        url=self.azure_jdbc,
-                        table=write_table,
-                        mode="append",
-                        properties=properties
-                    )
+
+                    if not df.isEmpty():
+                        df.write.jdbc(
+                            url=self.azure_jdbc,
+                            table=write_table,
+                            mode="append",
+                            properties=properties
+                        )
                     spark.stop()
                 return response
             return _call_wrapper
@@ -238,14 +266,12 @@ class ApiDecorator:
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
                 response = func(self, *args, **kwargs)
+                if not isinstance(response, pd.DataFrame):
+                    response = response.json()
                 if self.write_to_mysql and response:
                     spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
                     sc = spark.sparkContext
-                    if isinstance(response.json(), list):
-                        data = response.json()
-                    else:
-                        data = [response.json()]
-                    df = spark.read.json(sc.parallelize([json.dumps(record) for record in data]))
+                    df = ApiDecorator.__prepare_dataframe(spark, sc, response)
                     df.coalesce(1).write.mode('overwrite') \
                         .option('header', 'true') \
                         .csv(os.path.join(self.hadoop_uri, file_name))

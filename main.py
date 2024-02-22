@@ -2,51 +2,88 @@ import yaml
 
 from src.finnhub import FinnhubApi
 from src.fmp import FmpApi
+from src.yfinance import YFApi
 
 if __name__ == '__main__':
     with open('conf.yaml', 'r') as file:
         config = yaml.safe_load(file)
 
-    # initialize FinnhubApi
-    fin_api = FinnhubApi(base_url=config['api']['finnhub']['api_endpoint'],
-                         api_key=config['api']['finnhub']['token'],
-                         write_to_mongo=True,
-                         write_to_mysql=True,
-                         write_to_postgres=True,
-                         maria_conf=config['mariadb'],
-                         hadoop_conf=config['hadoop'],
-                         postgres_conf=config['postgres'],
-                         mongo_conf=config['mongodb'], )
+    # data requirement configurations
+    stock_symbols = [
+        'APPL', 'MSFT', 'NVDA', 'META', 'AMZN', 'TSLA', 'GOOGL',
+        'ON', 'DBD', 'DSGX', 'GTLB', 'LOGI', 'CRSR',
+        'LNG', 'SWN', 'APA', 'BTU', 'CL', 'CVX', 'XOM',
+        'BMY', 'THC', 'TNDM',
+        'MOS', 'AXTA', 'KOP',
+        'SBLK', 'EME', 'DNOW',
+    ]
+    # data history length: years
+    start_date = '2022-01-01'
+    duration = 15
+    # get end date
+    x = start_date.split('-')
+    x[0] = str(int(x[0]) - duration)
+    end_date = '-'.join(x)
 
-    news_params = {'symbol': 'AAPL', 'from': '2023-08-15', 'to': '2024-01-20'}
-    # get company news and save in mongodb
-    news = fin_api.fetch_company_news(params=news_params)
+    # initialize APIs
+    finn_api = FinnhubApi(
+        base_url=config['api']['finnhub']['api_endpoint'],
+        api_key=config['api']['finnhub']['token'],
+        write_to_mongo=True,
+        write_to_mysql=True,
+        write_to_postgres=True,
+        maria_conf=config['mariadb'],
+        hadoop_conf=config['hadoop'],
+        postgres_conf=config['postgres'],
+        mongo_conf=config['mongodb'],
+    )
 
-    insider_params = {
-        'symbol': 'AAPL',
-        'from': '2023-08-15',
-        'to': '2024-01-20'
-    }
-    # get insider transactions and save in mongodb
-    insider = fin_api.fetch_insider_transactions(params=insider_params)
+    yf_api = YFApi(
+        write_to_mongo=True,
+        write_to_mysql=True,
+        write_to_postgres=True,
+        maria_conf=config['mariadb'],
+        hadoop_conf=config['hadoop'],
+        postgres_conf=config['postgres'],
+        mongo_conf=config['mongodb'],
+    )
 
-    # initialize FmpApi
-    fmp_api = FmpApi(base_url=config['api']['fmp']['api_endpoint'],
-                     api_key=config['api']['fmp']['token'],
-                     write_to_mongo=True,
-                     write_to_mysql=True,
-                     write_to_postgres=True,
-                     maria_conf=config['mariadb'],
-                     hadoop_conf=config['hadoop'],
-                     postgres_conf=config['postgres'],
-                     mongo_conf=config['mongodb'],
-                     )
-    fmp_ticker_params = {'query': 'AA', 'exchange': 'NASDAQ'}
-    # get company ticker and save in mariadb
-    companies = fmp_api.fetch_company_ticker(params=fmp_ticker_params)
-    category_profile = 'TSLA'
-    company = fmp_api.fetch_company_profile(category=category_profile)
-    category_chart = 'AAPL'
-    chart = fmp_api.fetch_daily_chart(category=category_chart)
-    category_rating = 'TSLA'
-    ratings = fmp_api.fetch_historical_rating(category_rating)
+    fmp_api = FmpApi(
+        base_url=config['api']['fmp']['api_endpoint'],
+        api_key=config['api']['fmp']['token'],
+        write_to_mongo=True,
+        write_to_mysql=True,
+        write_to_postgres=True,
+        maria_conf=config['mariadb'],
+        hadoop_conf=config['hadoop'],
+        postgres_conf=config['postgres'],
+        mongo_conf=config['mongodb'],
+    )
+
+    for symbol in stock_symbols:
+        fmp_params = {
+            'query': symbol,
+        }
+        finn_params = {
+            'symbol': symbol,
+            'from': start_date,
+            'to': end_date,
+        }
+        yf_params = {
+            'symbol': symbol,
+            'start': start_date,
+            'end': end_date,
+        }
+        # get historical data from yfinance, and save them in mysql and postgresql
+        yf_api.fetch_historical_data(**yf_params)
+
+        # get company news from finnhub api, and saved in mysql and postgresql
+        finn_api.fin_api_req.fetch_company_news(params=finn_params)
+        # get inside transactions, and saved in mongodb
+        finn_api.fin_api_req.fetch_insider_transactions(params=finn_params)
+
+        # get company related information and stored in mysql and postgresql
+        fmp_api.fmp_api_req.fetch_company_ticker(params=fmp_params)
+        fmp_api.fmp_api_req.fetch_company_profile(symbol=symbol)
+        # get historical company rating and stored in msyql and postgresql
+        fmp_api.fmp_api_req.fetch_historical_rating(symbol=symbol)

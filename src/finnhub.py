@@ -61,9 +61,9 @@ class FinnhubApi(ApiInterface):
 
         return insider.json()['data']
 
-    @ApiDecorator.write_to_maria_sp(write_table='company_news')
-    @ApiDecorator.write_to_postgres_sp(write_table='company_news')
-    @ApiDecorator.write_to_mongodb_sp(collection='company_news')
+    @ApiDecorator.write_to_maria_sp(write_table='finn_company_news')
+    @ApiDecorator.write_to_postgres_sp(write_table='finn_company_news')
+    # @ApiDecorator.write_to_mongodb_sp(collection='finn_company_news')
     def fetch_company_news(self, params: dict = None):
         """
         get company news
@@ -78,7 +78,7 @@ class FinnhubApi(ApiInterface):
                                FinnhubApi.fetch_company_news.__name__)
         return news
 
-    @ApiDecorator.write_to_mongodb_sp(collection='insider_transactions')
+    @ApiDecorator.write_to_mongodb_sp(collection='finn_insider_transactions')
     def fetch_insider_transactions(self, params: dict = None):
         """
         get insider transactions
