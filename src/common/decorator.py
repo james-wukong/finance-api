@@ -131,7 +131,6 @@ class ApiDecorator:
         :param collection: str, collection name
         :return:
         """
-
         def wrapper(func):
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
@@ -148,17 +147,14 @@ class ApiDecorator:
                         'collection': collection
                     }
                     if not df.isEmpty():
-                        df.write.format("mongo") \
+                        df.repartition(5).write.format("mongo") \
                             .options(**config) \
                             .mode("append") \
                             .save()
                         spark.stop()
                 return response
-
             return _call_wrapper
-
         return wrapper
-
 
     @classmethod
     def write_to_maria_sp(cls, write_table: str = ''):
@@ -181,7 +177,7 @@ class ApiDecorator:
                                   & {'user', 'password', 'driver'}}
 
                     if not df.isEmpty():
-                        df.write.jdbc(
+                        df.repartition(5).write.jdbc(
                             url=self.maria_jdbc,
                             table=write_table,
                             mode="append",
@@ -213,7 +209,7 @@ class ApiDecorator:
                                   & {'user', 'password', 'driver'}}
 
                     if not df.isEmpty():
-                        df.write.jdbc(
+                        df.repartition(5).write.jdbc(
                             url=self.postgres_jdbc,
                             table=write_table,
                             mode="append",
@@ -245,7 +241,7 @@ class ApiDecorator:
                                   & {'user', 'password', 'driver'}}
 
                     if not df.isEmpty():
-                        df.write.jdbc(
+                        df.repartition(5).write.jdbc(
                             url=self.azure_jdbc,
                             table=write_table,
                             mode="append",
