@@ -21,6 +21,7 @@ class FmpApi(ApiInterface):
                  write_to_azure=False,
                  write_to_mongo=False,
                  mongo_conf: dict = None,
+                 hadoop_conf: dict = None,
                  maria_conf: dict = None,
                  azure_conf: dict = None,
                  postgres_conf: dict = None):
@@ -32,13 +33,13 @@ class FmpApi(ApiInterface):
                                      write_to_azure=write_to_azure,
                                      write_to_mongo=write_to_mongo,
                                      mongo_conf=mongo_conf,
+                                     hadoop_conf=hadoop_conf,
                                      maria_conf=maria_conf,
                                      azure_conf=azure_conf,
                                      postgres_conf=postgres_conf)
         self.fmp_api_req = FmpRequest(base_url=self.base_url,
                                       api_key=self.api_key)
 
-    @ApiDecorator.write_to_mariadb
     def get_company_ticker(self, params=None):
         """
         get company ticker info from FMP api: search-ticker
@@ -62,7 +63,6 @@ class FmpApi(ApiInterface):
                  item['stockExchange'], item['exchangeShortName'])
                 for item in company.json()], stmt
 
-    @ApiDecorator.write_to_mariadb
     def get_company_profile(self, category: str = None):
         """
         get company information from FMP api: company profile
@@ -157,6 +157,10 @@ class FmpApi(ApiInterface):
 
         return chart
 
+    @ApiDecorator.write_to_hadoop_csv(file_name='stock_news')
+    @ApiDecorator.write_to_maria_sp(write_table='stock_news')
+    @ApiDecorator.write_to_postgres_sp(write_table='stock_news')
+    @ApiDecorator.write_to_mongodb_sp(collection='stock_news')
     def fetch_stock_news(self, params: dict = None):
         """
         get company information from FMP api: company profile
@@ -171,3 +175,21 @@ class FmpApi(ApiInterface):
                                FmpApi.fetch_stock_news.__name__)
 
         return news
+
+    @ApiDecorator.write_to_hadoop_csv(file_name='historical_rating')
+    @ApiDecorator.write_to_maria_sp(write_table='historical_rating')
+    @ApiDecorator.write_to_postgres_sp(write_table='historical_rating')
+    @ApiDecorator.write_to_mongodb_sp(collection='historical_rating')
+    def fetch_historical_rating(self, category: str = None):
+        """
+        the historical rating of a company
+        :param category: str, such as symbol 'TSLA'
+        :return:
+        """
+        api_uri = self.fmp_api_req.compile_request(category=f'v3/historical-rating/{category}')
+        ratings = requests.get(api_uri)
+        if not ratings.ok:
+            raise ApiException("response from finnhub api is not OK",
+                               FmpApi.fetch_historical_rating.__name__)
+
+        return ratings

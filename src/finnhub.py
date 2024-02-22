@@ -22,6 +22,7 @@ class FinnhubApi(ApiInterface):
                  write_to_azure=False,
                  write_to_mongo=False,
                  mongo_conf: dict = None,
+                 hadoop_conf: dict = None,
                  maria_conf: dict = None,
                  azure_conf: dict = None,
                  postgres_conf: dict = None):
@@ -33,13 +34,13 @@ class FinnhubApi(ApiInterface):
                                          write_to_azure=write_to_azure,
                                          write_to_mongo=write_to_mongo,
                                          mongo_conf=mongo_conf,
+                                         hadoop_conf=hadoop_conf,
                                          maria_conf=maria_conf,
                                          azure_conf=azure_conf,
                                          postgres_conf=postgres_conf)
         self.fin_api_req = FinnhubRequest(base_url=self.base_url,
                                           api_key=self.api_key)
 
-    @ApiDecorator.write_to_mongodb(db='finance_api', col='stock_news')
     @ApiDecorator.format_data
     def get_company_news(self, params: dict = None):
         api_uri = self.fin_api_req.compile_request(category='company-news',
@@ -50,7 +51,6 @@ class FinnhubApi(ApiInterface):
                                FinnhubApi.get_company_news.__name__)
         return news
 
-    @ApiDecorator.write_to_mongodb(db='finance_api', col='insider_transactions')
     def get_insider_transactions(self, params: dict = None):
         api_uri = self.fin_api_req.compile_request(
             category='stock/insider-transactions', params=params)

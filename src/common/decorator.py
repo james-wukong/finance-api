@@ -1,5 +1,6 @@
 import functools
 import json
+import os
 
 import mysql.connector
 import pandas as pd
@@ -115,7 +116,7 @@ class ApiDecorator:
         def _call_wrapper(self, *args, **kwargs):
             response, stmt = func(self, *args, **kwargs)
             if self.write_to_mysql and response:
-                cnx = MariadbConn.initialize_mariadb_conn(self.mariadb_conf)
+                cnx = MariadbConn.initialize_mariadb_conn(self.maria_conf)
                 cursor = cnx.cursor()
                 try:
                     cursor.executemany(stmt, response)
@@ -247,7 +248,7 @@ class ApiDecorator:
                     df = spark.read.json(sc.parallelize([json.dumps(record) for record in data]))
                     df.coalesce(1).write.mode('overwrite') \
                         .option('header', 'true') \
-                        .csv(f'hdfs://localhost:9000/user/input/project/{file_name}.csv')
+                        .csv(os.path.join(self.hadoop_uri, file_name))
                     spark.stop()
                 return response
             return _call_wrapper

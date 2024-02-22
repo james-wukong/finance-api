@@ -21,6 +21,11 @@ postgres:
   database: finance_api
   driver: org.postgresql.Driver
 
+hadoop:
+  host: localhost
+  port: 9000
+  dir: /user/input/project/
+
 azuresql:
   host: james-azure-sql.database.windows.net
   user: xxxxx

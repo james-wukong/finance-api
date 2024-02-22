@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+import os
+from abc import ABC
 
 
 class ApiInterface(ABC):
@@ -13,6 +14,7 @@ class ApiInterface(ABC):
                  write_to_azure=False,
                  write_to_mongo=False,
                  mongo_conf: dict = None,
+                 hadoop_conf: dict = None,
                  maria_conf: dict = None,
                  azure_conf: dict = None,
                  postgres_conf: dict = None):
@@ -27,7 +29,9 @@ class ApiInterface(ABC):
         self.maria_conf = maria_conf
         self.postgres_conf = postgres_conf
         self.azure_conf = azure_conf
+        self.hadoop_conf = hadoop_conf
         self.mongo_uri = self.__generate_mongo_uri()
+        self.hadoop_uri = self.__generate_hadoop_uri()
         self.maria_jdbc = self.__generate_maria_jdbc()
         self.postgres_jdbc = self.__generate_postgres_jdbc()
         self.azure_jdbc = self.__generate_azure_jdbc()
@@ -43,6 +47,16 @@ class ApiInterface(ABC):
                 f"{self.mongo_conf['token']}@"
                 f"{self.mongo_conf['host']}"
                 f"/?retryWrites=true&w=majority")
+
+    def __generate_hadoop_uri(self) -> str | None:
+        """
+        generate mongo connection uri based on input
+        :return:
+        """
+        if not self.mongo_conf:
+            return None
+        return os.path.join(f"hdfs://{self.hadoop_conf['host']}:{self.hadoop_conf['port']}",
+                            self.hadoop_conf['dir'])
 
     def __generate_maria_jdbc(self) -> str | None:
         if not self.maria_conf:
