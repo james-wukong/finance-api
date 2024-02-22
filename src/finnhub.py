@@ -73,7 +73,6 @@ class FinnhubApi(ApiInterface):
         """
         api_uri = self.fin_api_req.compile_request(category='company-news',
                                                    params=params)
-        print(api_uri)
         news = requests.get(api_uri)
         if not news.ok:
             raise ApiException("response from finnhub api is not OK",

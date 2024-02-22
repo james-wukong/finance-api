@@ -35,6 +35,7 @@ class YFApi(ApiInterface):
                                     azure_conf=azure_conf,
                                     postgres_conf=postgres_conf)
 
+    @ApiDecorator.write_to_hadoop_csv(file_name='yf_historical_data')
     @ApiDecorator.write_to_maria_sp(write_table='yf_historical_data')
     @ApiDecorator.write_to_postgres_sp(write_table='yf_historical_data')
     # @ApiDecorator.write_to_mongodb_sp(collection='yf_historical_data')
