@@ -4,17 +4,35 @@ mariadb:
   user: xxxxx
   password: xxxxx
   database: finance_api
+  driver: org.mariadb.jdbc.Driver
 
 mongodb:
-  host: clusterxxxx.xxxxxxxx.mongodb.net
+  host: cluster0.wa0kflk.mongodb.net
   user: xxxxx
-  password: xxxxxx
-  token: xxxxxxxx
+  password: xxxxx
+  token: xxxxx
+  database: finance_api
+
+postgres:
+  host: localhost
+  user: xxxxx
+  password: xxxxx
+  port: 5432
+  database: finance_api
+  driver: org.postgresql.Driver
+
+azuresql:
+  host: james-azure-sql.database.windows.net
+  user: xxxxx
+  password: xxxxxxxxxx
+  port: 0
+  database: james_db
+  driver: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
 api:
   finnhub:
     api_endpoint: https://finnhub.io/api/v1/
-    token: xxxxxxxxx
+    token: xxxxx
   fmp:
     api_endpoint: https://financialmodelingprep.com/api/
-    token: xxxxxxxxxxx
+    token: xxxxx
