@@ -4,6 +4,16 @@ This project is initialized for big data program. We are about to process big da
 
 As I have never been an individual investor, during this project, only the relevant information that interests me will be fetched from apis.
  
+## How to Use
+
+1. copy conf-sample.yaml to conf.yaml
+2. change the configuration based on your env
+3. run
+
+```shell
+python3 main.py
+```
+
 ## read data from difference api sources, such as fmp, finviz and finnhub
 
 ### APIs

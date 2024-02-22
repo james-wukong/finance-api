@@ -265,13 +265,14 @@ class ApiDecorator:
                 response = func(self, *args, **kwargs)
                 if isinstance(response, Response):
                     response = response.json()
-                if self.write_to_mysql and response:
+                if self.write_to_mysql:
                     spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
                     sc = spark.sparkContext
                     df = ApiDecorator.__prepare_dataframe(spark, sc, response)
-                    df.coalesce(1).write.mode('overwrite') \
-                        .option('header', 'true') \
-                        .csv(os.path.join(self.hadoop_uri, file_name))
+                    if not df.isEmpty():
+                        df.coalesce(1).write.mode('overwrite') \
+                            .option('header', 'true') \
+                            .csv(os.path.join(self.hadoop_uri, file_name))
                     spark.stop()
                 return response
             return _call_wrapper
