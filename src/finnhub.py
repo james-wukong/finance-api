@@ -70,5 +70,16 @@ class FinnhubApi(ApiInterface):
         news = requests.get(api_uri)
         if not news.ok:
             raise ApiException("response from finnhub api is not OK",
-                               FinnhubApi.get_company_news.__name__)
+                               FinnhubApi.fetch_company_news.__name__)
         return news
+
+    @ApiDecorator.write_to_mongodb_sp(collection='insider_transactions')
+    def fetch_insider_transactions(self, params=None):
+        api_uri = self.fin_api_req.compile_request(
+            category='stock/insider-transactions', params=params)
+        insider = requests.get(api_uri)
+        if not insider.ok:
+            raise ApiException("response from finnhub api is not OK",
+                               FinnhubApi.fetch_insider_transactions.__name__)
+
+        return insider
