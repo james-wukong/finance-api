@@ -18,12 +18,12 @@ if __name__ == '__main__':
         'SBLK', 'EME', 'DNOW',
     ]
     # data history length: years
-    start_date = '2022-01-01'
+    end_date = '2022-01-01'
     duration = 15
     # get end date
-    x = start_date.split('-')
+    x = end_date.split('-')
     x[0] = str(int(x[0]) - duration)
-    end_date = '-'.join(x)
+    start_date = '-'.join(x)
 
     # initialize APIs
     finn_api = FinnhubApi(
