@@ -41,7 +41,7 @@ class FinnhubApi(ApiInterface):
 
     @ApiDecorator.write_to_mongodb(db='finance_api', col='stock_news')
     @ApiDecorator.format_data
-    def get_company_news(self, params=None):
+    def get_company_news(self, params: dict = None):
         api_uri = self.fin_api_req.compile_request(category='company-news',
                                                    params=params)
         news = requests.get(api_uri)
@@ -51,7 +51,7 @@ class FinnhubApi(ApiInterface):
         return news
 
     @ApiDecorator.write_to_mongodb(db='finance_api', col='insider_transactions')
-    def get_insider_transactions(self, params=None):
+    def get_insider_transactions(self, params: dict = None):
         api_uri = self.fin_api_req.compile_request(
             category='stock/insider-transactions', params=params)
         insider = requests.get(api_uri)
@@ -64,7 +64,12 @@ class FinnhubApi(ApiInterface):
     @ApiDecorator.write_to_maria_sp(write_table='company_news')
     @ApiDecorator.write_to_postgres_sp(write_table='company_news')
     @ApiDecorator.write_to_mongodb_sp(collection='company_news')
-    def fetch_company_news(self, params=None):
+    def fetch_company_news(self, params: dict = None):
+        """
+        get company news
+        :param params: {symbol: (str), from: (date), to: (date) }
+        :return:
+        """
         api_uri = self.fin_api_req.compile_request(category='company-news',
                                                    params=params)
         news = requests.get(api_uri)
@@ -74,7 +79,12 @@ class FinnhubApi(ApiInterface):
         return news
 
     @ApiDecorator.write_to_mongodb_sp(collection='insider_transactions')
-    def fetch_insider_transactions(self, params=None):
+    def fetch_insider_transactions(self, params: dict = None):
+        """
+        get insider transactions
+        :param params: {symbol: (str), from: (date), to: (date) }
+        :return:
+        """
         api_uri = self.fin_api_req.compile_request(
             category='stock/insider-transactions', params=params)
         insider = requests.get(api_uri)

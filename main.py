@@ -39,10 +39,10 @@ if __name__ == '__main__':
                      postgres_conf=config['postgres'],
                      mongo_conf=config['mongodb'],
                      )
-    fmp_ticker_params = {'query': 'AA', 'limit': 10, 'exchange': 'NASDAQ'}
+    fmp_ticker_params = {'query': 'AA', 'exchange': 'NASDAQ'}
     # get company ticker and save in mariadb
     companies = fmp_api.fetch_company_ticker(params=fmp_ticker_params)
-    category_profile = 'v3/profile/TSLA'
+    category_profile = 'TSLA'
     company = fmp_api.get_company_profile(category=category_profile)
-    category_chart = 'v3/historical-price-full/AAPL'
+    category_chart = 'AAPL'
     chart = fmp_api.fetch_daily_chart(category=category_chart)

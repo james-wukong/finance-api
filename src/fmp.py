@@ -65,11 +65,11 @@ class FmpApi(ApiInterface):
     @ApiDecorator.write_to_mariadb
     def get_company_profile(self, category: str = None):
         """
-        get company infomation from FMP api: company profile
-        :param category: str,
+        get company information from FMP api: company profile
+        :param category: str, such as symbol 'TSLA'
         :return:
         """
-        api_uri = self.fmp_api_req.compile_request(category=category)
+        api_uri = self.fmp_api_req.compile_request(category=f'v3/profile/{category}')
         company = requests.get(api_uri)
         if not company.ok:
             raise ApiException("response from finnhub api is not OK",
@@ -110,10 +110,10 @@ class FmpApi(ApiInterface):
     @ApiDecorator.write_to_maria_sp(write_table='company_ticker')
     @ApiDecorator.write_to_postgres_sp(write_table='company_ticker')
     @ApiDecorator.write_to_mongodb_sp(collection='company_ticker')
-    def fetch_company_ticker(self, params=None) -> Response:
+    def fetch_company_ticker(self, params: dict = None) -> Response:
         """
         get company ticker info from FMP api: search-ticker
-        :param params: dict, such as, {'symbol': 'TSLA', 'from':'2000-01-01'}
+        :param params: dict, such as, {query: (str), limit: (int), exchange: (str)}
         :return:
         """
         api_uri = self.fmp_api_req.compile_request(category='v3/search-ticker',
@@ -130,29 +130,44 @@ class FmpApi(ApiInterface):
     @ApiDecorator.write_to_mongodb_sp(collection='company_profile')
     def fetch_company_profile(self, category: str = None) -> Response:
         """
-        get company infomation from FMP api: company profile
-        :param category: str,
+        get company information from FMP api: company profile
+        :param category: str, such as symbol 'TSLA'
         :return:
         """
-        api_uri = self.fmp_api_req.compile_request(category=category)
+        api_uri = self.fmp_api_req.compile_request(category=f'v3/profile/{category}')
         company = requests.get(api_uri)
         if not company.ok:
             raise ApiException("response from finnhub api is not OK",
-                               FmpApi.get_company_profile.__name__)
+                               FmpApi.fetch_company_profile.__name__)
 
         return company
 
     @ApiDecorator.write_to_mongodb_sp(collection='company_daily_chart')
     def fetch_daily_chart(self, category: str = None) -> Response:
         """
-                get company infomation from FMP api: company profile
-                :param category: str,
-                :return:
-                """
-        api_uri = self.fmp_api_req.compile_request(category=category)
+        get company information from FMP api: company profile
+        :param category: str, such as symbol 'TSLA'
+        :return:
+        """
+        api_uri = self.fmp_api_req.compile_request(category=f'v3/historical-price-full/{category}')
         chart = requests.get(api_uri)
         if not chart.ok:
             raise ApiException("response from finnhub api is not OK",
-                               FmpApi.get_company_profile.__name__)
+                               FmpApi.fetch_daily_chart.__name__)
 
         return chart
+
+    def fetch_stock_news(self, params: dict = None):
+        """
+        get company information from FMP api: company profile
+        :param params: {page: (int), tickers: (str), limit(int)}
+        :return:
+        """
+        api_uri = self.fmp_api_req.compile_request(category='v3/stock_news',
+                                                   params=params)
+        news = requests.get(api_uri)
+        if not news.ok:
+            raise ApiException("response from finnhub api is not OK",
+                               FmpApi.fetch_stock_news.__name__)
+
+        return news
