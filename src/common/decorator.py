@@ -6,6 +6,7 @@ import mysql.connector
 import pandas as pd
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StructType
+from requests import Response
 
 from src.common.api_exception import ApiException
 from src.common.database import MariadbConn, MongoConn
@@ -135,7 +136,7 @@ class ApiDecorator:
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
                 response = func(self, *args, **kwargs)
-                if not isinstance(response, pd.DataFrame):
+                if isinstance(response, Response):
                     response = response.json()
                 if self.write_to_mongo:
                     spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
@@ -170,7 +171,7 @@ class ApiDecorator:
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
                 response = func(self, *args, **kwargs)
-                if not isinstance(response, pd.DataFrame):
+                if isinstance(response, Response):
                     response = response.json()
                 if self.write_to_mysql:
                     spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
@@ -202,7 +203,7 @@ class ApiDecorator:
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
                 response = func(self, *args, **kwargs)
-                if not isinstance(response, pd.DataFrame):
+                if isinstance(response, Response):
                     response = response.json()
                 if self.write_to_postgres:
                     spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
@@ -234,7 +235,7 @@ class ApiDecorator:
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
                 response = func(self, *args, **kwargs)
-                if not isinstance(response, pd.DataFrame):
+                if isinstance(response, Response):
                     response = response.json()
                 if self.write_to_mysql:
                     spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
@@ -266,7 +267,7 @@ class ApiDecorator:
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
                 response = func(self, *args, **kwargs)
-                if not isinstance(response, pd.DataFrame):
+                if isinstance(response, Response):
                     response = response.json()
                 if self.write_to_mysql and response:
                     spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)

@@ -161,7 +161,7 @@ class FmpApi(ApiInterface):
     @ApiDecorator.write_to_maria_sp(write_table='fmp_stock_news')
     @ApiDecorator.write_to_postgres_sp(write_table='fmp_stock_news')
     # @ApiDecorator.write_to_mongodb_sp(collection='fmp_stock_news')
-    def fetch_stock_news(self, params: dict = None):
+    def fetch_stock_news(self, params: dict = None) -> Response:
         """
         get company information from FMP api: company profile
         :param params: {page: (int), tickers: (str), limit(int)}
@@ -180,7 +180,7 @@ class FmpApi(ApiInterface):
     @ApiDecorator.write_to_maria_sp(write_table='fmp_historical_rating')
     @ApiDecorator.write_to_postgres_sp(write_table='fmp_historical_rating')
     # @ApiDecorator.write_to_mongodb_sp(collection='fmp_historical_rating')
-    def fetch_historical_rating(self, symbol: str = 'TSLA'):
+    def fetch_historical_rating(self, symbol: str = 'TSLA') -> Response:
         """
         the historical rating of a company
         :param symbol: str, such as symbol 'TSLA'
@@ -197,7 +197,7 @@ class FmpApi(ApiInterface):
     @ApiDecorator.write_to_maria_sp(write_table='fmp_cash_flow_stmt')
     @ApiDecorator.write_to_postgres_sp(write_table='fmp_cash_flow_stmt')
     @ApiDecorator.write_to_mongodb_sp(collection='fmp_cash_flow_stmt')
-    def fetch_cash_flow_stmt(self, symbol: str = '', params: dict = None):
+    def fetch_cash_flow_stmt(self, symbol: str = '', params: dict = None) -> Response:
         """
         The cash flow statement is a financial statement that highlights how cash moves through the company,
         including both cash inflows and outflows
@@ -217,7 +217,7 @@ class FmpApi(ApiInterface):
     @ApiDecorator.write_to_maria_sp(write_table='fmp_income_stmt')
     @ApiDecorator.write_to_postgres_sp(write_table='fmp_income_stmt')
     @ApiDecorator.write_to_mongodb_sp(collection='fmp_income_stmt')
-    def fetch_income_stmt(self, symbol: str = '', params: dict = None):
+    def fetch_income_stmt(self, symbol: str = '', params: dict = None) -> Response:
         """
          real-time income statement data for a wide range of companies,
          including public companies, private companies, and ETFs.

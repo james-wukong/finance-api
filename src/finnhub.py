@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import requests
+from requests import Response
 
 from src.common.req_compiler import FinnhubRequest
 from src.common.decorator import ApiDecorator
@@ -64,7 +65,7 @@ class FinnhubApi(ApiInterface):
     @ApiDecorator.write_to_maria_sp(write_table='finn_company_news')
     @ApiDecorator.write_to_postgres_sp(write_table='finn_company_news')
     # @ApiDecorator.write_to_mongodb_sp(collection='finn_company_news')
-    def fetch_company_news(self, params: dict = None):
+    def fetch_company_news(self, params: dict = None) -> Response:
         """
         get company news
         :param params: {symbol: (str), from: (date), to: (date) }
@@ -79,7 +80,7 @@ class FinnhubApi(ApiInterface):
         return news
 
     @ApiDecorator.write_to_mongodb_sp(collection='finn_insider_transactions')
-    def fetch_insider_transactions(self, params: dict = None):
+    def fetch_insider_transactions(self, params: dict = None) -> Response:
         """
         get insider transactions
         :param params: {symbol: (str), from: (date), to: (date) }
