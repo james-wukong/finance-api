@@ -10,7 +10,7 @@ if __name__ == '__main__':
 
     # data requirement configurations
     stock_symbols = [
-        'APPL', 'MSFT', 'NVDA', 'META', 'AMZN', 'TSLA', 'GOOGL',
+        'AAPL', 'MSFT', 'NVDA', 'META', 'AMZN', 'TSLA', 'GOOGL',
         'ON', 'DBD', 'DSGX', 'GTLB', 'LOGI', 'CRSR',
         'LNG', 'SWN', 'APA', 'BTU', 'CL', 'CVX', 'XOM',
         'BMY', 'THC', 'TNDM',

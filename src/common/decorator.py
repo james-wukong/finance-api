@@ -23,7 +23,7 @@ class ApiDecorator:
         :param data: data to be processed
         :return: spark sql dataframe
         """
-        if isinstance(data, pd.DataFrame):
+        if isinstance(data, pd.DataFrame) and not data.empty:
             df = spark.createDataFrame(data)
         elif isinstance(data, list):
             df = spark.read.json(sc.parallelize([json.dumps(record) for record in data]))
