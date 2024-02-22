@@ -147,7 +147,7 @@ class ApiDecorator:
                         'collection': collection
                     }
                     if not df.isEmpty():
-                        df.repartition(5).write.format("mongo") \
+                        df.write.format("mongo") \
                             .options(**config) \
                             .mode("append") \
                             .save()
@@ -177,7 +177,7 @@ class ApiDecorator:
                                   & {'user', 'password', 'driver'}}
 
                     if not df.isEmpty():
-                        df.repartition(5).write.jdbc(
+                        df.write.jdbc(
                             url=self.maria_jdbc,
                             table=write_table,
                             mode="append",
@@ -209,7 +209,7 @@ class ApiDecorator:
                                   & {'user', 'password', 'driver'}}
 
                     if not df.isEmpty():
-                        df.repartition(5).write.jdbc(
+                        df.write.jdbc(
                             url=self.postgres_jdbc,
                             table=write_table,
                             mode="append",
@@ -241,7 +241,7 @@ class ApiDecorator:
                                   & {'user', 'password', 'driver'}}
 
                     if not df.isEmpty():
-                        df.repartition(5).write.jdbc(
+                        df.write.jdbc(
                             url=self.azure_jdbc,
                             table=write_table,
                             mode="append",

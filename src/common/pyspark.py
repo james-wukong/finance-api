@@ -23,6 +23,7 @@ class MySpark:
                 .config("spark.mongodb.input.uri", mongo_uri) \
                 .config("spark.mongodb.output.uri", mongo_uri) \
                 .config("spark.jars.packages", "org.mongodb.spark:mongo-spark-connector_2.12:3.0.1") \
+                .config("spark.sql.shuffle.partitions", "2") \
                 .getOrCreate()
         except PySparkException as e:
             print(f"Failed to get or create Spark: {e}")
