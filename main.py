@@ -78,12 +78,12 @@ if __name__ == '__main__':
         yf_api.fetch_historical_data(**yf_params)
 
         # get company news from finnhub api, and saved in mysql and postgresql
-        finn_api.fin_api_req.fetch_company_news(params=finn_params)
+        finn_api.fetch_company_news(params=finn_params)
         # get inside transactions, and saved in mongodb
-        finn_api.fin_api_req.fetch_insider_transactions(params=finn_params)
+        finn_api.fetch_insider_transactions(params=finn_params)
 
         # get company related information and stored in mysql and postgresql
-        fmp_api.fmp_api_req.fetch_company_ticker(params=fmp_params)
-        fmp_api.fmp_api_req.fetch_company_profile(symbol=symbol)
+        fmp_api.fetch_company_ticker(params=fmp_params)
+        fmp_api.fetch_company_profile(symbol=symbol)
         # get historical company rating and stored in msyql and postgresql
-        fmp_api.fmp_api_req.fetch_historical_rating(symbol=symbol)
+        fmp_api.fetch_historical_rating(symbol=symbol)
