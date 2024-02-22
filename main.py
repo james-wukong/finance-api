@@ -84,6 +84,6 @@ if __name__ == '__main__':
 
         # get company related information and stored in mysql and postgresql
         fmp_api.fetch_company_ticker(params=fmp_params)
-        fmp_api.fetch_company_profile(symbol=symbol)
-        # get historical company rating and stored in msyql and postgresql
+        # fmp_api.fetch_company_profile(symbol=symbol)
+        # get historical company rating and stored in mysql and postgresql
         fmp_api.fetch_historical_rating(symbol=symbol)
