@@ -169,6 +169,7 @@ class ApiDecorator:
                 response = func(self, *args, **kwargs)
                 if isinstance(response, Response):
                     response = response.json()
+                print(response)
                 if self.write_to_mysql:
                     spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
                     sc = spark.sparkContext
