@@ -13,6 +13,7 @@ As I have never been an individual investor, during this project, only the relev
 3. run
 
 ```shell
+pip3 -r install requirments.txt
 python3 main.py
 ```
 
