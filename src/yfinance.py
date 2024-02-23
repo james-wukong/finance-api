@@ -45,5 +45,6 @@ class YFApi(ApiInterface):
                          end=end,
                          progress=False,
                          )
+        df['symbol'] = symbol
         df.reset_index(inplace=True)
         return df
