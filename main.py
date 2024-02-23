@@ -87,3 +87,6 @@ if __name__ == '__main__':
         # fmp_api.fetch_company_profile(symbol=symbol)
         # get historical company rating and stored in mysql and postgresql OK
         fmp_api.fetch_historical_rating(symbol=symbol)
+        # get stock news and stored in mysql and postgresql
+        # not tested because need have a paid api to fetch data
+        # fmp_api.fetch_stock_news(params=fmp_params)
