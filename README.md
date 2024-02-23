@@ -8,6 +8,8 @@ As I have never been an individual investor, during this project, only the relev
 
 1. copy conf-sample.yaml to conf.yaml
 2. change the configuration based on your env
+3. make sure you have a database named 'finance_api' (based on your configuration) in both your mysql and postgresql
+4. make sure you have a collection named 'finance_api' (based on your configuration) in your mongodb
 3. run
 
 ```shell
