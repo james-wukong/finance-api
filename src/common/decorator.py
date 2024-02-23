@@ -234,7 +234,7 @@ class ApiDecorator:
                 if isinstance(response, Response):
                     response = response.json()
                 if self.write_to_mysql:
-                    spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri)
+                    spark = MySpark.initialize_spark(mongo_uri=self.mongo_uri, is_azure=True)
                     sc = spark.sparkContext
                     df = ApiDecorator.__prepare_dataframe(spark, sc, response)
                     properties = {key: self.azure_conf[key] for key in self.azure_conf.keys()
