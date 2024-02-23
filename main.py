@@ -35,6 +35,7 @@ if __name__ == '__main__':
         maria_conf=config['mariadb'],
         hadoop_conf=config['hadoop'],
         postgres_conf=config['postgres'],
+        azure_conf=config['azuresql'],
         mongo_conf=config['mongodb'],
     )
 
@@ -46,6 +47,7 @@ if __name__ == '__main__':
         hadoop_conf=config['hadoop'],
         postgres_conf=config['postgres'],
         mongo_conf=config['mongodb'],
+        azure_conf=config['azuresql'],
     )
 
     fmp_api = FmpApi(
@@ -57,6 +59,7 @@ if __name__ == '__main__':
         maria_conf=config['mariadb'],
         hadoop_conf=config['hadoop'],
         postgres_conf=config['postgres'],
+        azure_conf=config['azuresql'],
         mongo_conf=config['mongodb'],
     )
 
