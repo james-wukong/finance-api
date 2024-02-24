@@ -293,7 +293,7 @@ class ApiDecorator:
                     sc = spark.sparkContext
                     df = ApiDecorator.__prepare_dataframe(spark, sc, response)
                     if not df.isEmpty():
-                        df.coalesce(1).write.mode('overwrite') \
+                        df.coalesce(1).write.mode('append') \
                             .option('header', 'true') \
                             .csv(os.path.join('data', file_name))
                         # .csv(os.path.join(self.hadoop_uri, file_name))
