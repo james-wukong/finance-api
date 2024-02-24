@@ -75,5 +75,7 @@ class ApiInterface(ABC):
     def __generate_azure_jdbc(self) -> str | None:
         if not self.azure_conf:
             return None
-        return (f"jdbc:sqlserver://{self.azure_conf['host']};"
-                f"databaseName={self.azure_conf['database']};")
+        return (f"jdbc:sqlserver://{self.azure_conf['host']}:{self.azure_conf['port']};"
+                f"databaseName={self.azure_conf['database']};"
+                f"user={self.azure_conf['user']}@{self.azure_conf['db_resource']};"
+                f"password={self.azure_conf['password']};encrypt=true;")
