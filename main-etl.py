@@ -31,3 +31,10 @@ if __name__ == '__main__':
     )
 
     print(mysql_df.show())
+
+    mongo_df = spark.read.format('mongo') \
+        .option("database", 'finance_api') \
+        .option("collection", 'finn_insider_transactions') \
+        .load()
+
+    print(mongo_df.show())
