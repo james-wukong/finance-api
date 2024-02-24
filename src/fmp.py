@@ -107,7 +107,7 @@ class FmpApi(ApiInterface):
                  item['isActivelyTrading'], item['isAdr'], item['isFund'])
                 for item in company.json()], stmt
 
-    @ApiDecorator.write_to_azure_sp(write_table='dbo.fmp_company_ticker')
+    @ApiDecorator.write_to_azure_sp(write_table='fmp_company_ticker')
     @ApiDecorator.write_to_maria_sp(write_table='fmp_company_ticker')
     @ApiDecorator.write_to_postgres_sp(write_table='fmp_company_ticker')
     # @ApiDecorator.write_to_mongodb_sp(collection='fmp_company_ticker')
