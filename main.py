@@ -1,5 +1,7 @@
 import yaml
 
+from src.common.decorator import ApiDecorator
+from src.common.pyspark import MySpark
 from src.finnhub import FinnhubApi
 from src.fmp import FmpApi
 from src.yfinance import YFApi
@@ -86,10 +88,20 @@ if __name__ == '__main__':
         # finn_api.fetch_insider_transactions(params=finn_params)
 
         # get company related information and stored in mysql and postgresql OK
-        fmp_api.fetch_company_ticker(params=fmp_params)
+        # fmp_api.fetch_company_ticker(params=fmp_params)
         # fmp_api.fetch_company_profile(symbol=symbol)
         # get historical company rating and stored in mysql and postgresql OK
         # fmp_api.fetch_historical_rating(symbol=symbol)
         # get stock news and stored in mysql and postgresql
         # not tested because need have a paid api to fetch data
         # fmp_api.fetch_stock_news(params=fmp_params)
+
+        table_name = "SalesLT.Customer"
+        spark = MySpark.initialize_spark(mongo_uri=fmp_api.mongo_uri, is_azure=True)
+        azure_df = spark.read.jdbc(url=fmp_api.azure_jdbc, table=table_name, properties={
+            "user": config['azuresql']['user'],
+            "password": config['azuresql']['password'],
+            "driver": config['azuresql']['driver']
+        })
+        print(azure_df.show())
+        spark.stop()
