@@ -80,28 +80,18 @@ if __name__ == '__main__':
             'end': end_date,
         }
         # get historical data from yfinance, and save them in mysql and postgresql OK
-        # yf_api.fetch_historical_data(**yf_params)
+        yf_api.fetch_historical_data(**yf_params)
 
         # get company news from finnhub api, and saved in mysql and postgresql OK
-        # finn_api.fetch_company_news(params=finn_params)
+        finn_api.fetch_company_news(params=finn_params)
         # get inside transactions, and saved in mongodb OK
-        # finn_api.fetch_insider_transactions(params=finn_params)
+        finn_api.fetch_insider_transactions(params=finn_params)
 
         # get company related information and stored in mysql and postgresql OK
         fmp_api.fetch_company_ticker(params=fmp_params)
-        # fmp_api.fetch_company_profile(symbol=symbol)
+        fmp_api.fetch_company_profile(symbol=symbol)
         # get historical company rating and stored in mysql and postgresql OK
-        # fmp_api.fetch_historical_rating(symbol=symbol)
+        fmp_api.fetch_historical_rating(symbol=symbol)
         # get stock news and stored in mysql and postgresql
         # not tested because need have a paid api to fetch data
         # fmp_api.fetch_stock_news(params=fmp_params)
-        # print(fmp_api.azure_jdbc, fmp_api.mongo_uri)
-        # table_name = "SalesLT.Customer"
-        # spark = MySpark.initialize_spark(mongo_uri=fmp_api.mongo_uri, is_azure=True)
-        # azure_df = spark.read.jdbc(url=fmp_api.azure_jdbc, table=table_name, properties={
-        #     "user": config['azuresql']['user'],
-        #     "password": config['azuresql']['password'],
-        #     "driver": config['azuresql']['driver']
-        # })
-        # print(azure_df.show())
-        # spark.stop()
