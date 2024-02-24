@@ -108,8 +108,8 @@ class FmpApi(ApiInterface):
                 for item in company.json()], stmt
 
     @ApiDecorator.write_to_azure_sp(write_table='fmp_company_ticker')
-    @ApiDecorator.write_to_maria_sp(write_table='fmp_company_ticker')
-    @ApiDecorator.write_to_postgres_sp(write_table='fmp_company_ticker')
+    # @ApiDecorator.write_to_maria_sp(write_table='fmp_company_ticker')
+    # @ApiDecorator.write_to_postgres_sp(write_table='fmp_company_ticker')
     # @ApiDecorator.write_to_mongodb_sp(collection='fmp_company_ticker')
     def fetch_company_ticker(self, params: dict = None) -> Response:
         """
