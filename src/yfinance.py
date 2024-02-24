@@ -1,10 +1,10 @@
 import yfinance as yf
 
 from src.common.decorator import ApiDecorator
-from src.common.interface import ApiInterface
+from src.common.baseapi import BaseApi
 
 
-class YFApi(ApiInterface):
+class YFBaseApi(BaseApi):
     """
     Base class that implements api calls
     """

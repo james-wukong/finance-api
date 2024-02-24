@@ -4,10 +4,10 @@ from requests import Response
 from src.common.api_exception import ApiException
 from src.common.decorator import ApiDecorator
 from src.common.req_compiler import FmpRequest
-from src.common.interface import ApiInterface
+from src.common.baseapi import BaseApi
 
 
-class FmpApi(ApiInterface):
+class FmpBaseApi(BaseApi):
     """
     Base class that implements api calls
     """
@@ -26,7 +26,7 @@ class FmpApi(ApiInterface):
         company = requests.get(api_uri)
         if not company.ok:
             raise ApiException("response from finnhub api is not OK",
-                               FmpApi.get_company_ticker.__name__)
+                               FmpBaseApi.get_company_ticker.__name__)
 
         # statement used to upsert data into database
         stmt = ("INSERT INTO company_ticker "
@@ -48,7 +48,7 @@ class FmpApi(ApiInterface):
         company = requests.get(api_uri)
         if not company.ok:
             raise ApiException("response from finnhub api is not OK",
-                               FmpApi.get_company_profile.__name__)
+                               FmpBaseApi.get_company_profile.__name__)
 
         # statement used to upsert data into database
         stmt = ("INSERT INTO company_profile "
@@ -97,7 +97,7 @@ class FmpApi(ApiInterface):
         ticker = requests.get(api_uri)
         if not ticker.ok:
             raise ApiException("response from finnhub api is not OK",
-                               FmpApi.get_company_ticker.__name__)
+                               FmpBaseApi.get_company_ticker.__name__)
 
         return ticker
 
@@ -114,7 +114,7 @@ class FmpApi(ApiInterface):
         company = requests.get(api_uri)
         if not company.ok:
             raise ApiException("response from finnhub api is not OK",
-                               FmpApi.fetch_company_profile.__name__)
+                               FmpBaseApi.fetch_company_profile.__name__)
 
         return company
 
@@ -129,7 +129,7 @@ class FmpApi(ApiInterface):
         chart = requests.get(api_uri)
         if not chart.ok:
             raise ApiException("response from finnhub api is not OK",
-                               FmpApi.fetch_daily_chart.__name__)
+                               FmpBaseApi.fetch_daily_chart.__name__)
 
         return chart
 
@@ -148,7 +148,7 @@ class FmpApi(ApiInterface):
         news = requests.get(api_uri)
         if not news.ok:
             raise ApiException("response from finnhub api is not OK",
-                               FmpApi.fetch_stock_news.__name__)
+                               FmpBaseApi.fetch_stock_news.__name__)
 
         return news
 
@@ -166,7 +166,7 @@ class FmpApi(ApiInterface):
         ratings = requests.get(api_uri)
         if not ratings.ok:
             raise ApiException("response from finnhub api is not OK",
-                               FmpApi.fetch_historical_rating.__name__)
+                               FmpBaseApi.fetch_historical_rating.__name__)
 
         return ratings
 
@@ -186,7 +186,7 @@ class FmpApi(ApiInterface):
         stmt = requests.get(api_uri)
         if not stmt.ok:
             raise ApiException("response from finnhub api is not OK",
-                               FmpApi.fetch_cash_flow_stmt.__name__)
+                               FmpBaseApi.fetch_cash_flow_stmt.__name__)
 
         return stmt
 
@@ -206,7 +206,7 @@ class FmpApi(ApiInterface):
         stmt = requests.get(api_uri)
         if not stmt.ok:
             raise ApiException("response from finnhub api is not OK",
-                               FmpApi.fetch_income_stmt.__name__)
+                               FmpBaseApi.fetch_income_stmt.__name__)
 
         return stmt
 

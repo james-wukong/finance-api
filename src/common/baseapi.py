@@ -4,7 +4,7 @@ import os
 from abc import ABC
 
 
-class ApiInterface(ABC):
+class BaseApi(ABC):
     def __init__(self,
                  base_url=None,
                  api_key=None,
@@ -30,11 +30,26 @@ class ApiInterface(ABC):
         self.postgres_conf = postgres_conf
         self.azure_conf = azure_conf
         self.hadoop_conf = hadoop_conf
-        self.mongo_uri = self.__generate_mongo_uri()
-        self.hadoop_uri = self.__generate_hadoop_uri()
-        self.maria_jdbc = self.__generate_maria_jdbc()
-        self.postgres_jdbc = self.__generate_postgres_jdbc()
-        self.azure_jdbc = self.__generate_azure_jdbc()
+
+    @property
+    def mongo_uri(self):
+        return self.__generate_mongo_uri()
+
+    @property
+    def hadoop_uri(self):
+        return self.__generate_hadoop_uri()
+
+    @property
+    def maria_jdbc(self):
+        return self.__generate_maria_jdbc()
+
+    @property
+    def postgres_jdbc(self):
+        return self.__generate_postgres_jdbc()
+
+    @property
+    def azure_jdbc(self):
+        return self.__generate_azure_jdbc()
 
     def __generate_mongo_uri(self) -> str | None:
         """

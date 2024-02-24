@@ -6,10 +6,10 @@ from requests import Response
 from src.common.req_compiler import FinnhubRequest
 from src.common.decorator import ApiDecorator
 from src.common.api_exception import ApiException
-from src.common.interface import ApiInterface
+from src.common.baseapi import BaseApi
 
 
-class FinnhubApi(ApiInterface):
+class FinnhubBaseApi(BaseApi):
     """
     Base class that implements api calls
     """
@@ -24,7 +24,7 @@ class FinnhubApi(ApiInterface):
         news = requests.get(api_uri)
         if not news.ok:
             raise ApiException("response from finnhub api is not OK",
-                               FinnhubApi.get_company_news.__name__)
+                               FinnhubBaseApi.get_company_news.__name__)
         return news
 
     def get_insider_transactions(self, params: dict = None):
@@ -33,7 +33,7 @@ class FinnhubApi(ApiInterface):
         insider = requests.get(api_uri)
         if not insider.ok:
             raise ApiException("response from finnhub api is not OK",
-                               FinnhubApi.get_insider_transactions.__name__)
+                               FinnhubBaseApi.get_insider_transactions.__name__)
 
         return insider.json()['data']
 
@@ -51,7 +51,7 @@ class FinnhubApi(ApiInterface):
         news = requests.get(api_uri)
         if not news.ok:
             raise ApiException("response from finnhub api is not OK",
-                               FinnhubApi.fetch_company_news.__name__)
+                               FinnhubBaseApi.fetch_company_news.__name__)
         return news
 
     @ApiDecorator.write_to_mongodb_sp(collection='finn_insider_transactions')
@@ -66,6 +66,6 @@ class FinnhubApi(ApiInterface):
         insider = requests.get(api_uri)
         if not insider.ok:
             raise ApiException("response from finnhub api is not OK",
-                               FinnhubApi.fetch_insider_transactions.__name__)
+                               FinnhubBaseApi.fetch_insider_transactions.__name__)
 
         return insider
