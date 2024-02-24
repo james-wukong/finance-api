@@ -45,6 +45,7 @@ class ApiDecorator:
         :param param_api: str, different api might implement different name in their uri, such as, 'token', 'apikey'
         :return:
         """
+
         def wrapper(func):
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
@@ -54,7 +55,9 @@ class ApiDecorator:
                     return request + f"?{param_api}=" + api_key
                 else:
                     return request + f"&{param_api}=" + api_key
+
             return _call_wrapper
+
         return wrapper
 
     @classmethod
@@ -64,6 +67,7 @@ class ApiDecorator:
         :param func:
         :return:
         """
+
         @functools.wraps(func)
         def _call_wrapper(self, *args, **kwargs):
             response = func(self, *args, **kwargs)
@@ -74,6 +78,7 @@ class ApiDecorator:
             else:
                 raise ApiException("Output must be either pandas or json",
                                    ApiDecorator.format_data.__name__)
+
         return _call_wrapper
 
     @classmethod
@@ -84,6 +89,7 @@ class ApiDecorator:
         :param col: str, collection name
         :return:
         """
+
         def wrapper(func):
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
@@ -94,7 +100,9 @@ class ApiDecorator:
                     collection = mongo_conn[db][col]
                     collection.insert_many(response)
                 return response
+
             return _call_wrapper
+
         return wrapper
 
     @classmethod
@@ -104,6 +112,7 @@ class ApiDecorator:
         :param func:
         :return:
         """
+
         @functools.wraps(func)
         def _call_wrapper(self, *args, **kwargs):
             response, stmt = func(self, *args, **kwargs)
@@ -121,6 +130,7 @@ class ApiDecorator:
                     if cnx.is_connected():
                         cursor.close()
                         cnx.close()
+
         return _call_wrapper
 
     @classmethod
@@ -131,6 +141,7 @@ class ApiDecorator:
         :param collection: str, collection name
         :return:
         """
+
         def wrapper(func):
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
@@ -153,7 +164,9 @@ class ApiDecorator:
                             .save()
                         spark.stop()
                 return response
+
             return _call_wrapper
+
         return wrapper
 
     @classmethod
@@ -163,6 +176,7 @@ class ApiDecorator:
         :param write_table: str, table name to write data
         :return:
         """
+
         def wrapper(func):
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
@@ -185,7 +199,9 @@ class ApiDecorator:
                         )
                     spark.stop()
                 return response
+
             return _call_wrapper
+
         return wrapper
 
     @classmethod
@@ -195,6 +211,7 @@ class ApiDecorator:
         :param write_table: str, table name to write data
         :return:
         """
+
         def wrapper(func):
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
@@ -217,7 +234,9 @@ class ApiDecorator:
                         )
                     spark.stop()
                 return response
+
             return _call_wrapper
+
         return wrapper
 
     @classmethod
@@ -227,6 +246,7 @@ class ApiDecorator:
         :param write_table: str, table name to write data
         :return:
         """
+
         def wrapper(func):
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
@@ -249,7 +269,9 @@ class ApiDecorator:
                         )
                     spark.stop()
                 return response
+
             return _call_wrapper
+
         return wrapper
 
     @classmethod
@@ -259,6 +281,7 @@ class ApiDecorator:
         :param file_name: str, file name
         :return:
         """
+
         def wrapper(func):
             @functools.wraps(func)
             def _call_wrapper(self, *args, **kwargs):
@@ -272,8 +295,11 @@ class ApiDecorator:
                     if not df.isEmpty():
                         df.coalesce(1).write.mode('overwrite') \
                             .option('header', 'true') \
-                            .csv(os.path.join(self.hadoop_uri, file_name))
+                            .csv(os.path.join('data', file_name))
+                        # .csv(os.path.join(self.hadoop_uri, file_name))
                     spark.stop()
                 return response
+
             return _call_wrapper
+
         return wrapper
