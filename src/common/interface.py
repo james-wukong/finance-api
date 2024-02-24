@@ -76,6 +76,4 @@ class ApiInterface(ABC):
         if not self.azure_conf:
             return None
         return (f"jdbc:sqlserver://{self.azure_conf['host']}:{self.azure_conf['port']};"
-                f"databaseName={self.azure_conf['database']};"
-                f"user={self.azure_conf['user']}@{self.azure_conf['db_resource']};"
-                f"password={self.azure_conf['password']};encrypt=true;")
+                f"databaseName={self.azure_conf['database']};encrypt=true;")
