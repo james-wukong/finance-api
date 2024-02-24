@@ -12,7 +12,6 @@ class MySpark:
     def initialize_spark(cls, mongo_uri: str, name: str = 'Default Project') -> SparkSession | None:
         """
         initialize spark
-        :param is_azure:
         :param mongo_uri: str, mongo connection uri
         :param name: str, spark application name
         :return:
