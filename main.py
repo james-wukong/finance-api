@@ -95,7 +95,7 @@ if __name__ == '__main__':
         # get stock news and stored in mysql and postgresql
         # not tested because need have a paid api to fetch data
         # fmp_api.fetch_stock_news(params=fmp_params)
-
+        print(fmp_api.azure_jdbc, fmp_api.mongo_uri)
         table_name = "SalesLT.Customer"
         spark = MySpark.initialize_spark(mongo_uri=fmp_api.mongo_uri, is_azure=True)
         azure_df = spark.read.jdbc(url=fmp_api.azure_jdbc, table=table_name, properties={
