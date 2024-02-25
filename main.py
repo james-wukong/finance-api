@@ -1,5 +1,5 @@
 import argparse
-from datetime import date
+from datetime import date, timedelta
 
 import yaml
 
@@ -11,9 +11,9 @@ if __name__ == '__main__':
     with open('conf.yaml', 'r') as file:
         config = yaml.safe_load(file)
 
-    today = str(date.today())
+    yesterday = str(date.today() - timedelta(days=1))
     # data history length: years
-    end_date, start_date = today, today
+    end_date, start_date = yesterday, yesterday
     duration, update = 20, True
 
     parser = argparse.ArgumentParser(
