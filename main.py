@@ -36,6 +36,8 @@ if __name__ == '__main__':
             x = end_date.split('-')
             x[0] = str(int(x[0]) - duration)
             start_date, update = '-'.join(x), False
+        else:
+            exit(0)
 
     # data requirement configurations
     stock_symbols = [
