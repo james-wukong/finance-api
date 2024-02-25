@@ -1,7 +1,8 @@
+import argparse
+from datetime import date
+
 import yaml
 
-from src.common.decorator import ApiDecorator
-from src.common.pyspark import MySpark
 from src.finnhub import FinnhubBaseApi
 from src.fmp import FmpBaseApi
 from src.yfinance import YFBaseApi
@@ -9,6 +10,32 @@ from src.yfinance import YFBaseApi
 if __name__ == '__main__':
     with open('conf.yaml', 'r') as file:
         config = yaml.safe_load(file)
+
+    today = str(date.today())
+    # data history length: years
+    end_date, start_date = today, today
+    duration, update = 20, True
+
+    parser = argparse.ArgumentParser(
+        prog="main.py",
+        description="get data from api and store them in database",
+        epilog="Thanks for using %(prog)s! :)",
+    )
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("-i", "--initialize", action="store_true",
+                       help='use this if you want to initialize all data (for the first run)')
+    group.add_argument("-u", "--update", action="store_false",
+                       help='use this if you want to update data')
+    args = parser.parse_args()
+
+    # using command python3 main.py -i or python3 main.py --initialize when run for the first time
+    if args.initialize:
+        confirm = input('Are you initializing historical data? [Y/N]')
+        if confirm.upper() == 'Y':
+            # get start date
+            x = end_date.split('-')
+            x[0] = str(int(x[0]) - duration)
+            start_date, update = '-'.join(x), False
 
     # data requirement configurations
     stock_symbols = [
@@ -19,13 +46,6 @@ if __name__ == '__main__':
         'MOS', 'AXTA', 'KOP',
         'SBLK', 'EME', 'DNOW',
     ]
-    # data history length: years
-    end_date = '2024-01-01'
-    duration = 15
-    # get end date
-    x = end_date.split('-')
-    x[0] = str(int(x[0]) - duration)
-    start_date = '-'.join(x)
 
     # initialize APIs
     finn_api = FinnhubBaseApi(
@@ -89,7 +109,10 @@ if __name__ == '__main__':
 
         # get company related information and stored in mysql and postgresql OK
         fmp_api.fetch_company_ticker(params=fmp_params)
-        fmp_api.fetch_company_profile(symbol=symbol)
+
+        if not update:
+            # get company profile, and save in mongodb and csv files
+            fmp_api.fetch_company_profile(symbol=symbol)
         # get historical company rating and stored in mysql and postgresql OK
         fmp_api.fetch_historical_rating(symbol=symbol)
         # get stock news and stored in mysql and postgresql
