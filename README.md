@@ -14,7 +14,9 @@ As I have never been an individual investor, during this project, only the relev
 
 ```shell
 pip3 -r install requirments.txt
-python3 main.py
+# -i for initialize data (only used when running the program for the first time
+# -u for update data, fetching daily data and save in database
+python3 main.py -i
 ```
 
 ## read data from difference api sources, such as fmp, finviz and finnhub
