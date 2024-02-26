@@ -13,7 +13,7 @@ As I have never been an individual investor, during this project, only the relev
 3. run
 
 ```shell
-pip3 -r install requirments.txt
+pip3 install -r requirments.txt
 # -i for initialize data (only used when running the program for the first time
 # -u for update data, fetching daily data and save in database
 python3 main.py -i
