@@ -9,6 +9,7 @@ class YFBaseApi(BaseApi):
     Base class that implements api calls
     """
     # @ApiDecorator.write_to_hadoop_csv(file_name='yf_historical_data')
+    @ApiDecorator.write_to_mssql_sp(write_table='yf_historical_data')
     @ApiDecorator.write_to_maria_sp(write_table='yf_historical_data')
     @ApiDecorator.write_to_postgres_sp(write_table='yf_historical_data')
     # @ApiDecorator.write_to_mongodb_sp(collection='yf_historical_data')

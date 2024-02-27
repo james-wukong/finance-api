@@ -21,6 +21,14 @@ postgres:
   database: finance_api
   driver: org.postgresql.Driver
 
+mssql:
+  host: 2localhost
+  user: xxxxx
+  password: xxxxx
+  port: 1433
+  database: finance_api
+  driver: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
 hadoop:
   host: localhost
   port: 9000
