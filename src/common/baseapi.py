@@ -95,4 +95,5 @@ class BaseApi(ABC):
         if not self.mssql_conf:
             return None
         return (f"jdbc:sqlserver://{self.mssql_conf['host']}:{self.mssql_conf['port']};"
-                f"database={self.mssql_conf['database']};encrypt=true;")
+                f"databaseName={self.mssql_conf['database']};encrypt=true;trustServerCertificate=true;")
+# jdbc:sqlserver://ZAHRA\SQLEXPRESS:61254;database=cot_report;trustServerCertificate=true;encrypt=true
