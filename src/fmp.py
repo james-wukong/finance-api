@@ -137,6 +137,7 @@ class FmpBaseApi(BaseApi):
         return chart
 
     # @ApiDecorator.write_to_hadoop_csv(file_name='fmp_stock_news')
+    @ApiDecorator.write_to_mssql_sp(write_table='fmp_stock_news')
     @ApiDecorator.write_to_maria_sp(write_table='fmp_stock_news')
     @ApiDecorator.write_to_postgres_sp(write_table='fmp_stock_news')
     # @ApiDecorator.write_to_mongodb_sp(collection='fmp_stock_news')
