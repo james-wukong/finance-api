@@ -38,3 +38,10 @@ if __name__ == '__main__':
         .load()
 
     print(mongo_df.show())
+
+    mysql_df = spark.read.jdbc(
+        url=settings.maria_jdbc,
+        table=f"SELECT FROM_UNIXTIME(datetime, '%Y-%M-%D') as date, headline, related as symbol, source, summary as "
+              f"text FROM finn_company_news) t",
+        properties=get_property(config['mariadb'])
+    )

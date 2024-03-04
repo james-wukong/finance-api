@@ -85,6 +85,7 @@ class FmpBaseApi(BaseApi):
     # @ApiDecorator.write_to_azure_sp(write_table='fmp_company_ticker')
     @ApiDecorator.write_to_maria_sp(write_table='fmp_company_ticker')
     @ApiDecorator.write_to_postgres_sp(write_table='fmp_company_ticker')
+    @ApiDecorator.write_to_mssql_sp(write_table='fmp_company_ticker')
     # @ApiDecorator.write_to_mongodb_sp(collection='fmp_company_ticker')
     def fetch_company_ticker(self, params: dict = None) -> Response:
         """
@@ -105,6 +106,7 @@ class FmpBaseApi(BaseApi):
     # @ApiDecorator.write_to_postgres_sp(write_table='fmp_company_profile')
     @ApiDecorator.write_to_mongodb_sp(collection='fmp_company_profile')
     @ApiDecorator.write_to_hadoop_csv(file_name='fmp_company_profile')
+    @ApiDecorator.write_to_mssql_sp(write_table='fmp_company_profile')
     def fetch_company_profile(self, symbol: str = 'TSLA') -> Response:
         """
         get company information from FMP api: company profile
