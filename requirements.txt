@@ -1,7 +1,10 @@
 pyyaml
 requests
+numpy
 pandas
 yfinance
 mysql-connector-python
 pymongo
 pyspark
+tensorflow
+transformers
