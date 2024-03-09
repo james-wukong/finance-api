@@ -98,28 +98,28 @@ if __name__ == '__main__':
             'end': end_date,
         }
 
-        # # get historical data from yfinance, and save them in mysql and postgresql OK
-        # yf_api.fetch_historical_data(**yf_params)
-        # #
-        # # # get company news from finnhub api, and saved in mysql and postgresql OK
-        # finn_api.fetch_company_news(params=finn_params)
-        # # # get inside transactions, and saved in mongodb OK
-        # finn_api.fetch_insider_transactions(params=finn_params)
-        # #
-        # # # get company related information and stored in mysql and postgresql OK
-        # fmp_api.fetch_company_ticker(params=fmp_params)
-        # #
-        # if not update:
-        #     # get company profile, and save in mongodb and csv files
-        #     fmp_api.fetch_company_profile(symbol=symbol)
-        # # # get historical company rating and stored in mysql and postgresql OK
-        # fmp_api.fetch_historical_rating(symbol=symbol)
-        # # # get stock news and stored in mysql and postgresql
-        # # # not tested because need have a paid api to fetch data
-        # fmp_api.fetch_stock_news(params=fmp_params)
+        # get historical data from yfinance, and save them in mysql and postgresql OK
+        yf_api.fetch_historical_data(**yf_params)
         #
-        # # getting fundamental data
-        # fmp_api.fetch_income_stmt(symbol=symbol)
+        # # get company news from finnhub api, and saved in mysql and postgresql OK
+        finn_api.fetch_company_news(params=finn_params)
+        # # get inside transactions, and saved in mongodb OK
+        finn_api.fetch_insider_transactions(params=finn_params)
+        #
+        # # get company related information and stored in mysql and postgresql OK
+        fmp_api.fetch_company_ticker(params=fmp_params)
+        #
+        if not update:
+            # get company profile, and save in mongodb and csv files
+            fmp_api.fetch_company_profile(symbol=symbol)
+        # # get historical company rating and stored in mysql and postgresql OK
+        fmp_api.fetch_historical_rating(symbol=symbol)
+        # # get stock news and stored in mysql and postgresql
+        # # not tested because need have a paid api to fetch data
+        fmp_api.fetch_stock_news(params=fmp_params)
+
+        # getting fundamental data
+        fmp_api.fetch_income_stmt(symbol=symbol)
 
     # get cot report
     for symbol in sec_symbols:
