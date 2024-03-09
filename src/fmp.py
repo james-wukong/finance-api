@@ -199,13 +199,15 @@ class FmpBaseApi(BaseApi):
     @ApiDecorator.write_to_mongodb_sp(collection='fmp_income_stmt')
     def fetch_income_stmt(self, symbol: str = '', params: dict = None) -> Response:
         """
-         real-time income statement data for a wide range of companies,
-         including public companies, private companies, and ETFs.
         :param params: {period: (annual | quarter), limit: (int)}
         :param symbol: str, such as symbol 'TSLA'
         :return:
         """
-        api_uri = self.fmp_api_req.compile_request(category=f'v3/cash-flow-statement/{symbol}',
+        if not params:
+            params = {'period': 'quarter'}
+        else:
+            params['period'] = 'quarter'
+        api_uri = self.fmp_api_req.compile_request(category=f'v3/income-statement/{symbol}',
                                                    params=params)
         stmt = requests.get(api_uri)
         if not stmt.ok:
@@ -214,3 +216,20 @@ class FmpBaseApi(BaseApi):
 
         return stmt
 
+    @ApiDecorator.write_to_maria_sp(write_table='fmp_cmtmt_trader_report')
+    @ApiDecorator.write_to_postgres_sp(write_table='fmp_cmtmt_trader_report')
+    @ApiDecorator.write_to_mssql_sp(write_table='fmp_cmtmt_trader_report')
+    def fetch_cmtmt_trader_report(self, symbol: str = '', params: dict = None) -> Response:
+        """
+        This function returns information on the current positions
+        held by commercial and non-commercial hedgers. It also returns the spread between their long,
+        and short positions
+        """
+        api_uri = self.fmp_api_req.compile_request(category=f'v4/commitment_of_traders_report/{symbol}',
+                                                   params=params)
+        report = requests.get(api_uri)
+        if not report.ok:
+            raise ApiException("response from finnhub api is not OK",
+                               FmpBaseApi.fetch_cmtmt_trader_report.__name__)
+
+        return report
