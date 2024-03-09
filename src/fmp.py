@@ -219,6 +219,7 @@ class FmpBaseApi(BaseApi):
     @ApiDecorator.write_to_maria_sp(write_table='fmp_cmtmt_trader_report')
     @ApiDecorator.write_to_postgres_sp(write_table='fmp_cmtmt_trader_report')
     @ApiDecorator.write_to_mssql_sp(write_table='fmp_cmtmt_trader_report')
+    @ApiDecorator.process_cmtmt_report
     def fetch_cmtmt_trader_report(self, symbol: str = '', params: dict = None) -> Response:
         """
         This function returns information on the current positions

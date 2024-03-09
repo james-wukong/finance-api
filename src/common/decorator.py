@@ -82,6 +82,30 @@ class ApiDecorator:
         return _call_wrapper
 
     @classmethod
+    def process_cmtmt_report(cls, func):
+        """
+        decorator that process commitment trade report data
+        :param func:
+        :return:
+        """
+        @functools.wraps(func)
+        def _call_wrapper(self, *args, **kwargs):
+            response = func(self, *args, **kwargs)
+            df = pd.DataFrame(response.json())
+            df.date = pd.to_datetime(df.date)
+
+            cot = df[['date', 'noncomm_positions_long_all',
+                      'noncomm_positions_short_all',
+                      'comm_positions_long_all',
+                      'comm_positions_short_all']]
+            cot['comm_spread'] = cot['comm_positions_long_all'] - cot['comm_positions_short_all']
+            cot['non_comm_spread'] = cot['noncomm_positions_long_all'] - cot['noncomm_positions_short_all']
+
+            return cot
+
+        return _call_wrapper
+
+    @classmethod
     def write_to_mongodb(cls, db, col):
         """
         decorator that writes result data into mongodb
