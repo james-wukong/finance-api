@@ -94,7 +94,7 @@ class ApiDecorator:
             df = pd.DataFrame(response.json())
             df.date = pd.to_datetime(df.date)
 
-            cot = df[['date', 'noncomm_positions_long_all',
+            cot = df[['date', 'symbol', 'noncomm_positions_long_all',
                       'noncomm_positions_short_all',
                       'comm_positions_long_all',
                       'comm_positions_short_all']]
