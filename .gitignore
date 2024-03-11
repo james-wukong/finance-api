@@ -2,7 +2,6 @@
 .idea/
 .DS_Store
 conf.yaml
-data/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
