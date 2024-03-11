@@ -2,6 +2,8 @@
 .idea/
 .DS_Store
 conf.yaml
+data/company_profile.sql
+data/company_ticker.sql
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
